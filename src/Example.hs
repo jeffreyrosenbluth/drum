@@ -7,7 +7,8 @@ import Interpret
 import Drum
 import Play
 
--- Use >> to sequence, <> to play in parallel.
+-- Use >> to sequence
+-- Use <> to play in parallel.
 beat1 = (hiHat >> hiHat >> hiHat >> hiHat) <> (bass >> snare >> bass >> snare)
 
 -- Demonstrate do notation for sequencing.
@@ -43,3 +44,53 @@ house = mconcat [ orbit (dot $ n8 rest >> hiHat)
                 , orbit (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
                 , orbit bass
                 ]
+
+sample = do
+    bass2
+    bass
+    stick
+    snare
+    snare2
+    hiHat
+    crash
+    ride
+    cow
+    hiTom
+    tamb
+    clap
+    loTom2
+    clHat
+    loTom
+    pedal
+    midTom
+    opHat
+    midTom2
+    hiTom2
+    chinese
+    rideBl
+    splash
+    crash2
+    slap
+    ride2
+    hiBongo
+    loBongo
+    muConga
+    opConga
+    loConga
+    hiTimb
+    loTimb
+    hiAgogo
+    loAgogo
+    cabasa
+    maracas
+    sWhistl
+    lWhistl
+    sGuiro
+    lGuiro
+    claves
+    hiWdBlk
+    loWdBlk
+    muCuica
+    opCuica
+    muTrngl
+    opTrngl
