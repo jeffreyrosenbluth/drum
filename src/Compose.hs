@@ -10,11 +10,11 @@ module Compose
   , dur
   , Beat(..)
   , emptyC
-  , Compose
-  , Riff
+  , SongM
+  , Song
   , cmap
-  , execCompose
-  , compose
+  , execSongM
+  , SongM
   , strike
   , mkBeat
   , orbit
@@ -63,57 +63,57 @@ data Beat =
 emptyC :: Beat
 emptyC = Prim (Hit BassDrum1 0 0)
 
-type Riff = Compose ()
+type Song = SongM ()
 
-newtype Compose a = Compose {unCompose :: (Beat, a)}
+newtype SongM a = SongM {unSongM :: (Beat, a)}
 
-cmap :: (Hit -> Hit) -> Compose a -> Compose a
-cmap f (Compose (c,a)) = Compose $ (hmap f c, a)
+cmap :: (Hit -> Hit) -> SongM a -> SongM a
+cmap f (SongM (c,a)) = SongM $ (hmap f c, a)
   where
     hmap f (Prim h)      = Prim (f h)
     hmap f (Chain c1 c2) = Chain (hmap f c1) (hmap f c2)
     hmap f (Par   c1 c2) = Par   (hmap f c1) (hmap f c2)
 
-instance Functor Compose where
+instance Functor SongM where
   fmap = liftM
 
-instance Applicative Compose where
+instance Applicative SongM where
   pure  = return
   (<*>) = ap
 
 -- | This is basically a writer monad specialized to accumulating Beats
 --   horizontally.
-instance Monad Compose where
-  return a = Compose (emptyC, a)
-  Compose (c, a) >>= k =
-    let (Compose (c', a')) = k a
-    in  Compose ((Chain c c'), a')
+instance Monad SongM where
+  return a = SongM (emptyC, a)
+  SongM (c, a) >>= k =
+    let (SongM (c', a')) = k a
+    in  SongM ((Chain c c'), a')
 
 -------------------------------------------------------------------------------
 
-execCompose :: Compose a -> Beat
-execCompose = fst . unCompose
+execSongM :: SongM a -> Beat
+execSongM = fst . unSongM
 
-compose :: Beat -> Riff
-compose c = Compose (c, ())
+song :: Beat -> Song
+song c = SongM (c, ())
 
-strike :: Hit -> Riff
-strike = compose . Prim
+strike :: Hit -> Song
+strike = song . Prim
 
 -- | Play two Beats in parallel.
-instance Monoid (Compose ()) where
-  mempty        = Compose (emptyC, ())
-  mappend c1 c2 = Compose (Par (execCompose c1) (execCompose c2), ())
+instance Monoid (SongM ()) where
+  mempty        = SongM (emptyC, ())
+  mappend c1 c2 = SongM (Par (execSongM c1) (execSongM c2), ())
 
-mkBeat :: [Hit] -> Riff
-mkBeat hits = compose $ mkComp hits
+mkBeat :: [Hit] -> Song
+mkBeat hits = song $ mkComp hits
   where
     mkComp hits = foldr1 Chain (map Prim hits)
 
-orbit :: Compose a -> Compose a
+orbit :: SongM a -> SongM a
 orbit c = c >> orbit c
 
-clone :: Int -> Compose a -> Compose a
+clone :: Int -> SongM a -> SongM a
 clone 1 c = c
 clone n c = c >> clone (n-1) c
 --------------------------------------------------------------------------------

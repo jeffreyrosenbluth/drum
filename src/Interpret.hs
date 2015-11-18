@@ -18,8 +18,8 @@ totalDur (Prim hit)    = hit ^. dur
 totalDur (Chain c1 c2) = totalDur c1 + totalDur c2
 totalDur (Par c1 c2)   = max (totalDur c1) (totalDur c2)
 
-interpret :: Compose a -> [Hit]
-interpret comp = go 0 (execCompose comp)
+interpret :: SongM a -> [Hit]
+interpret comp = go 0 (execSongM comp)
   where
     go d (Prim   h)    = [h & dur .~ d]
     go d (Chain c1 c2) = go d c1 ++ go (d + totalDur c1) c2
