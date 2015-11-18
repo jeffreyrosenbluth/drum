@@ -9,10 +9,10 @@ volume = 100
 quarter :: Int
 quarter = 280
 
-atom :: Sound -> ComposeM
+atom :: Sound -> Riff
 atom t = n4 . strike $ hit t 0 volume
 
-n16, n8, n4, n2, n1, dot :: ComposeM -> ComposeM
+n16, n8, n4, n2, n1, dot :: Riff -> Riff
 n16  = cmap (\h -> (h & dur .~ round (fromIntegral quarter / 4)))
 n8  = cmap (\h -> (h & dur .~ round (fromIntegral quarter / 2)))
 n4  = cmap (\h -> (h & dur .~ quarter))
@@ -23,12 +23,12 @@ dot = cmap (\h -> h & dur %~ (\d -> round (fromIntegral d * 1.5)))
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
 --                  mu = mute, s = short, l = long.
-bass2, bass, stick, snare, snare2, hiHat, crash, ride, cow, hiTom    :: ComposeM
-tamb, clap, loTom2, clHat, loTom, pedal, midTom, opHat, midTom2      :: ComposeM
-hiTom2, chinese, rideBl, splash, crash2, slap, ride2, hiBongo        :: ComposeM
-loBongo, muConga, opConga, loConga, hiTimb, loTimb, hiAgogo, loAgogo :: ComposeM
-cabasa, maracas, sWhistl, lWhistl, sGuiro, lGuiro, claves, hiWdBlk   :: ComposeM
-loWdBlk, muCuica, opCuica, muTrngl, opTrngl                          :: ComposeM
+bass2, bass, stick, snare, snare2, hiHat, crash, ride, cow, hiTom    :: Riff
+tamb, clap, loTom2, clHat, loTom, pedal, midTom, opHat, midTom2      :: Riff
+hiTom2, chinese, rideBl, splash, crash2, slap, ride2, hiBongo        :: Riff
+loBongo, muConga, opConga, loConga, hiTimb, loTimb, hiAgogo, loAgogo :: Riff
+cabasa, maracas, sWhistl, lWhistl, sGuiro, lGuiro, claves, hiWdBlk   :: Riff
+loWdBlk, muCuica, opCuica, muTrngl, opTrngl                          :: Riff
 bass2   = atom BassDrum2
 bass    = atom BassDrum1
 stick   = atom SideStick
@@ -78,5 +78,5 @@ opCuica = atom OpenCuica
 muTrngl = atom MuteTriangle
 opTrngl = atom OpenTriangle
 
-rest :: ComposeM
+rest :: Riff
 rest = n4 . strike $ hit BassDrum1 0 0

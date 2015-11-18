@@ -13,7 +13,7 @@ par (x:xs) (y:ys)
   | (x ^. dur) <= (y ^. dur) = x : par xs (y:ys)
   | otherwise                = y : par (x:xs) ys
 
-totalDur :: Composition -> Int
+totalDur :: Beat -> Int
 totalDur (Prim hit)    = hit ^. dur
 totalDur (Chain c1 c2) = totalDur c1 + totalDur c2
 totalDur (Par c1 c2)   = max (totalDur c1) (totalDur c2)

@@ -28,7 +28,7 @@ getConnection = do
       [] -> error "No MIDI Devices found."
       (dst:_) -> openDestination dst
 
-play :: ComposeM -> IO ()
+play :: Riff -> IO ()
 play comp = do
     conn <- getConnection
     start conn

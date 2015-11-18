@@ -8,15 +8,15 @@ module Compose
   , tone
   , vol
   , dur
-  , Composition(..)
+  , Beat(..)
   , emptyC
   , Compose
-  , ComposeM
+  , Riff
   , cmap
   , execCompose
   , compose
   , strike
-  , mkComposition
+  , mkBeat
   , orbit
   , clone
 
@@ -54,18 +54,18 @@ makeLenses ''Hit
 hit :: Sound -> Int -> Int -> Hit
 hit t d v = Hit t d v
 
-data Composition =
+data Beat =
     Prim  Hit
-  | Chain Composition Composition
-  | Par   Composition Composition
+  | Chain Beat Beat
+  | Par   Beat Beat
   deriving (Show)
 
-emptyC :: Composition
+emptyC :: Beat
 emptyC = Prim (Hit BassDrum1 0 0)
 
-type ComposeM = Compose ()
+type Riff = Compose ()
 
-newtype Compose a = Compose {unCompose :: (Composition, a)}
+newtype Compose a = Compose {unCompose :: (Beat, a)}
 
 cmap :: (Hit -> Hit) -> Compose a -> Compose a
 cmap f (Compose (c,a)) = Compose $ (hmap f c, a)
@@ -81,7 +81,7 @@ instance Applicative Compose where
   pure  = return
   (<*>) = ap
 
--- | This is basically a writer monad specialized to accumulating compositions
+-- | This is basically a writer monad specialized to accumulating Beats
 --   horizontally.
 instance Monad Compose where
   return a = Compose (emptyC, a)
@@ -91,22 +91,22 @@ instance Monad Compose where
 
 -------------------------------------------------------------------------------
 
-execCompose :: Compose a -> Composition
+execCompose :: Compose a -> Beat
 execCompose = fst . unCompose
 
-compose :: Composition -> ComposeM
+compose :: Beat -> Riff
 compose c = Compose (c, ())
 
-strike :: Hit -> ComposeM
+strike :: Hit -> Riff
 strike = compose . Prim
 
--- | Play two compositions in parallel.
+-- | Play two Beats in parallel.
 instance Monoid (Compose ()) where
   mempty        = Compose (emptyC, ())
   mappend c1 c2 = Compose (Par (execCompose c1) (execCompose c2), ())
 
-mkComposition :: [Hit] -> ComposeM
-mkComposition hits = compose $ mkComp hits
+mkBeat :: [Hit] -> Riff
+mkBeat hits = compose $ mkComp hits
   where
     mkComp hits = foldr1 Chain (map Prim hits)
 
