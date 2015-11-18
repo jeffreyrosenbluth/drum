@@ -1,6 +1,6 @@
 module Drum where
 
-import Types
+import Compose
 import Control.Lens
 
 volume :: Int

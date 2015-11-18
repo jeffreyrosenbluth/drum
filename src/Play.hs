@@ -11,7 +11,7 @@ import Control.Concurrent
 import System.MIDI
 import System.Info
 
-import Types
+import Compose
 import Interpret
 
 hitToMidiEvent :: Hit -> MidiEvent

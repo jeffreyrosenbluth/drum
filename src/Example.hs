@@ -2,7 +2,7 @@ module Example where
 
 import Data.Monoid
 
-import Types
+import Compose
 import Interpret
 import Drum
 import Play

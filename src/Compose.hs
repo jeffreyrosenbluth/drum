@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Types
+module Compose
   ( Sound(..)
   , Hit
   , hit

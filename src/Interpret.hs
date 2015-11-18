@@ -2,7 +2,7 @@ module Interpret
   ( interpret
   ) where
 
-import Types
+import Compose
 import Control.Lens
 -------------------------------------------------------------------------------
 
