@@ -39,10 +39,8 @@ loop :: Compose a -> IO ()
 loop comp = do
   conn <- getConnection
   start conn
-  evalStateT runComposition (conn, interpret $ cyc comp)
+  evalStateT runComposition (conn, interpret $ orbit comp)
   close conn
-  where
-    cyc c = c >> cyc c
 
 runComposition :: StateT (Connection, [Hit]) IO ()
 runComposition = do

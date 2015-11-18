@@ -7,28 +7,39 @@ import Interpret
 import Drum
 import Play
 
-beat1 = mconcat [ mkComposition [hi, hi, hi, hi],
-                  mkComposition [bd, sn, bd, sn] ]
+-- Use >> to sequence, <> to play in parallel.
+beat1 = (hiHat >> hiHat >> hiHat >> hiHat) <> (bass >> snare >> bass >> snare)
 
-bs = mkComposition $ cycle [bd, sn, bd, sn, bd, n8 sn, dot bd, sn]
+-- Demonstrate do notation for sequencing.
+-- 'orbit' make an infinite sequence.
+bs = orbit $ do
+   bass
+   snare
+   bass
+   snare
+   bass
+   n8 snare
+   dot bass
+   snare
 
-h8 = mkComposition $ replicate 8 (n8 hi)
+h8 = clone 8 (n8 hiHat)
 
-h12 = mkComposition $ replicate 12 (n8 hi)
+h12 = clone 12 (n8 hiHat)
 
-trill = mkComposition $ replicate 8 (n16 hi)
+trill = clone 8 (n16 hiHat)
 
--- hats = h8 |> trill |> h12 |> trill |> (mkComposition [n4 hi, hi, hi])
 hats = do
   h8
   trill
   h12
   trill
-  mkComposition [n4 hi, hi, hi]
+  hiHat
+  hiHat
+  hiHat
 
-trap = mconcat [ hats,
-                 mkComposition [n1 bd, n1 sn, n1 bd, n1 sn]]
+trap = hats <> (n1 bass >> n1 snare >> n1 bass >> n1 snare) >> crash >> ride
 
-house = mconcat [ mkComposition $ cycle [dot $ n8 rt, n4 hi]
-                , mkComposition $ cycle [n8 rt, n4 hi, n4 hi, n4 hi, n4 hi]
-                , mkComposition $ cycle [n4 bd, n4 bd, n4 bd, n4 bd]]
+house = mconcat [ orbit (dot $ n8 rest >> hiHat)
+                , orbit (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
+                , orbit bass
+                ]
