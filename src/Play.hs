@@ -1,6 +1,6 @@
 module Play
-  ( hitToMidiEvent
-  , play
+  ( play
+  , loop
   )
 where
 
@@ -34,6 +34,15 @@ play comp = do
     start conn
     evalStateT runComposition (conn, interpret comp)
     close conn
+
+loop :: Compose a -> IO ()
+loop comp = do
+  conn <- getConnection
+  start conn
+  evalStateT runComposition (conn, interpret $ cyc comp)
+  close conn
+  where
+    cyc c = c >> cyc c
 
 runComposition :: StateT (Connection, [Hit]) IO ()
 runComposition = do

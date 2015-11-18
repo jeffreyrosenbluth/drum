@@ -85,7 +85,7 @@ compose c = Compose (c, ())
 
 -- | Play two compositions in parallel.
 instance Monoid (Compose ()) where
-  mempty  = Compose (emptyC, ())
+  mempty        = Compose (emptyC, ())
   mappend c1 c2 = Compose (Par (execCompose c1) (execCompose c2), ())
 
 mkComposition :: [Hit] -> ComposeM
