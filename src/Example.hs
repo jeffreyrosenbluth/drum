@@ -9,10 +9,12 @@ import Play
 
 -- Use >> to sequence
 -- Use <> to play in parallel.
+beat1 :: ComposeM
 beat1 = (hiHat >> hiHat >> hiHat >> hiHat) <> (bass >> snare >> bass >> snare)
 
 -- Demonstrate do notation for sequencing.
 -- 'orbit' make an infinite sequence.
+bs :: ComposeM
 bs = orbit $ do
    bass
    snare
@@ -23,13 +25,11 @@ bs = orbit $ do
    dot bass
    snare
 
-h8 = clone 8 (n8 hiHat)
-
-h12 = clone 12 (n8 hiHat)
-
+h8, h12, trill, hats :: ComposeM
+h8    = clone 8 (n8 hiHat)
+h12   = clone 12 (n8 hiHat)
 trill = clone 8 (n16 hiHat)
-
-hats = do
+hats  = do
   h8
   trill
   h12
@@ -38,13 +38,16 @@ hats = do
   hiHat
   hiHat
 
+trap :: ComposeM
 trap = hats <> (n1 bass >> n1 snare >> n1 bass >> n1 snare) >> crash >> ride
 
+house :: ComposeM
 house = mconcat [ orbit (dot $ n8 rest >> hiHat)
                 , orbit (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
                 , orbit bass
                 ]
 
+sample :: ComposeM
 sample = do
     bass2
     bass

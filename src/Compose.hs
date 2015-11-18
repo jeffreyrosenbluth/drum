@@ -26,7 +26,6 @@ import Control.Applicative
 import Control.Monad
 import Data.Monoid
 import Control.Lens
-
 -------------------------------------------------------------------------------
 
 data Sound =
