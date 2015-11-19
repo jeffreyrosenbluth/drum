@@ -49,11 +49,6 @@ house = mconcat [ orbit (dot $ n8 rest >> hiHat)
                 , orbit (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
                 , orbit bass
                 ]
-house1 :: Song
-house1 = mconcat [  (dot $ n8 rest >> hiHat)
-                ,  (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
-                ,  bass
-                ]
 
 sample :: Song
 sample = do

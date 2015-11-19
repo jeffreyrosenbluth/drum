@@ -39,6 +39,8 @@ mkSM sm = go $ unSongM sm
       go (s1, a)
       go (s2, a)
     go (Par s1 s2, a) = do
-      go (s1, a)
-      go (s2, a)
+      d <- ask
+      let (SongM (t1,_)) = runReaderT (go (s1, a)) d
+      let (SongM (t2,_)) = runReaderT (go (s2, a)) d
+      lift $ SongM (Par t1 t2, a)
     go (None, a) = return a
