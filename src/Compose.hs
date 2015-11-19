@@ -62,6 +62,7 @@ data Beat =
     Prim  Hit
   | Chain Beat Beat
   | Par   Beat Beat
+  | BPM
   | None
   deriving (Show)
 
@@ -79,9 +80,10 @@ runSongMonad  = flip runReaderT
 songMap :: (Hit -> Hit) -> SongM a -> SongM a
 songMap f (SongM (c,a)) = SongM $ (hmap f c, a)
   where
-    hmap f (Prim h)      = Prim (f h)
-    hmap f (Chain c1 c2) = Chain (hmap f c1) (hmap f c2)
-    hmap f (Par   c1 c2) = Par   (hmap f c1) (hmap f c2)
+    hmap f (Prim h)      = Prim  (f h)
+    hmap f (Chain b1 b2) = Chain (hmap f b1) (hmap f b2)
+    hmap f (Par   b1 b2) = Par   (hmap f b1) (hmap f b2)
+    hmap _ b             = b
 
 instance Functor SongM where
   fmap = liftM
@@ -94,9 +96,9 @@ instance Applicative SongM where
 --   horizontally.
 instance Monad SongM where
   return a = SongM (None, a)
-  SongM (c, a) >>= k =
-    let (SongM (c', a')) = k a
-    in  SongM ((Chain c c'), a')
+  SongM (b, a) >>= k =
+    let (SongM (b', a')) = k a
+    in  SongM ((Chain b b'), a')
 
 -------------------------------------------------------------------------------
 
@@ -107,7 +109,7 @@ songM :: Beat -> a -> SongM a
 songM b a = SongM (b, a)
 
 song :: Beat -> Song
-song c = SongM (c, ())
+song b = SongM (b, ())
 
 strike :: Hit -> Song
 strike = song . Prim
@@ -115,7 +117,7 @@ strike = song . Prim
 -- | Play two Beats in parallel.
 instance Monoid (SongM ()) where
   mempty        = SongM (None, ())
-  mappend c1 c2 = SongM (Par (execSongM c1) (execSongM c2), ())
+  mappend b1 b2 = SongM (Par (execSongM b1) (execSongM b2), ())
 
 mkBeat :: [Hit] -> Song
 mkBeat hits = song $ mkComp hits
@@ -123,9 +125,9 @@ mkBeat hits = song $ mkComp hits
     mkComp hits = foldr1 Chain (map Prim hits)
 
 orbit :: SongM a -> SongM a
-orbit c = c >> orbit c
+orbit b = b >> orbit b
 
 clone :: Int -> SongM a -> SongM a
-clone 1 c = c
-clone n c = c >> clone (n-1) c
+clone 1 b = b
+clone n b = b >> clone (n-1) b
 --------------------------------------------------------------------------------

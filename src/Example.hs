@@ -26,7 +26,7 @@ bs = do
    snare
 
 test :: Song
-test = crash >> crash
+test = crash >> song BPM >> crash
 
 h8, h12, trill, hats :: Song
 h8    = clone 8 (n8 hiHat)
@@ -59,6 +59,7 @@ sample = do
     snare2
     hiHat
     crash
+    song BPM
     ride
     cow
     hiTom
