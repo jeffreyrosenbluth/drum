@@ -13,12 +13,12 @@ atom :: Sound -> Song
 atom t = n4 . strike $ hit t 0 volume
 
 n16, n8, n4, n2, n1, dot :: Song -> Song
-n16  = cmap (\h -> (h & dur .~ round (fromIntegral quarter / 4)))
-n8  = cmap (\h -> (h & dur .~ round (fromIntegral quarter / 2)))
-n4  = cmap (\h -> (h & dur .~ quarter))
-n2  = cmap (\h -> (h & dur .~ (2 * quarter)))
-n1  = cmap (\h -> (h & dur .~ (4 * quarter)))
-dot = cmap (\h -> h & dur %~ (\d -> round (fromIntegral d * 1.5)))
+n16 = songMap (\h -> (h & dur .~ round (fromIntegral quarter / 4)))
+n8  = songMap (\h -> (h & dur .~ round (fromIntegral quarter / 2)))
+n4  = songMap (\h -> (h & dur .~ quarter))
+n2  = songMap (\h -> (h & dur .~ (2 * quarter)))
+n1  = songMap (\h -> (h & dur .~ (4 * quarter)))
+dot = songMap (\h -> h & dur %~ (\d -> round (fromIntegral d * 1.5)))
 
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,

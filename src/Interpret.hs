@@ -35,13 +35,13 @@ adjustDurs sm = go $ unSongM sm
   where
     go (Prim h, a) = do
       d <- ask
-      lift $ SongM (Prim (h & dur %~ (`div` d)), a)
+      lift $ songM (Prim (h & dur %~ (`div` d))) a
     go (Chain s1 s2, a) = do
       go (s1, a)
       go (s2, a)
     go (Par s1 s2, a) = do
       d <- ask
-      let (SongM (t1,_)) = runReaderT (go (s1, a)) d
-      let (SongM (t2,_)) = runReaderT (go (s2, a)) d
-      lift $ SongM (Par t1 t2, a)
+      let (SongM (t1, b)) = runSongMonad d (go (s1, a))
+      let (SongM (t2, c)) = runSongMonad d (go (s2, a))
+      lift $ songM (Par t1 t2) c
     go (None, a) = return a

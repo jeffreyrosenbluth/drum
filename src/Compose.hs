@@ -12,9 +12,11 @@ module Compose
   , SongM(..)
   , Song
   , SongMonad
+  , songM
+  , song
   , Tempo
   , runSongMonad
-  , cmap
+  , songMap
   , execSongM
   , strike
   , mkBeat
@@ -74,8 +76,8 @@ type SongMonad = ReaderT Tempo SongM
 runSongMonad :: Tempo -> SongMonad a -> SongM a
 runSongMonad  = flip runReaderT
 
-cmap :: (Hit -> Hit) -> SongM a -> SongM a
-cmap f (SongM (c,a)) = SongM $ (hmap f c, a)
+songMap :: (Hit -> Hit) -> SongM a -> SongM a
+songMap f (SongM (c,a)) = SongM $ (hmap f c, a)
   where
     hmap f (Prim h)      = Prim (f h)
     hmap f (Chain c1 c2) = Chain (hmap f c1) (hmap f c2)
@@ -100,6 +102,9 @@ instance Monad SongM where
 
 execSongM :: SongM a -> Beat
 execSongM = fst . unSongM
+
+songM :: Beat -> a -> SongM a
+songM b a = SongM (b, a)
 
 song :: Beat -> Song
 song c = SongM (c, ())
