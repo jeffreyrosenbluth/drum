@@ -23,11 +23,10 @@ module Compose
   , songMap
   , execSong
   , strike
-  , mkCommand
   , orbit
   , clone
 
-  )where
+  ) where
 
 import Control.Applicative
 import Control.Monad
@@ -35,7 +34,7 @@ import Control.Monad.State
 import Data.Monoid
 import Control.Lens
 -------------------------------------------------------------------------------
-
+-- | The available instruments.
 data Sound =
      BassDrum2     | BassDrum1     | SideStick    | SnareDrum1
    | HandClap      | SnareDrum2    | LowTom2      | ClosedHihat
@@ -51,6 +50,8 @@ data Sound =
    | OpenCuica     | MuteTriangle  | OpenTriangle
    deriving (Show,Eq,Ord,Enum)
 
+-- | A single drum strike, 'tone' is the instrument, dur the duration, and
+--  vol the volume.
 data Hit = Hit
     { _tone :: Sound
     , _dur  :: Int
@@ -59,9 +60,13 @@ data Hit = Hit
 
 makeLenses ''Hit
 
+-- | Constructor fo 'Hit'.
 hit :: Sound -> Int -> Int -> Hit
 hit t d v = Hit t d v
 
+-- | The commands the comprixe a song. Prim for a single drum hit. Chain for
+--   a sequence of hits. Par for making to sequences run in parallel. And BPM,
+--   Vol, for tempo and volume.
 data Command =
     Prim  Hit
   | Chain Command Command
@@ -71,14 +76,11 @@ data Command =
   | None
   deriving (Show)
 
--- type Song = Song ()
-
 newtype Song a = Song {unSong :: (Command, a)}
 
 type Song' = Song ()
 
-type Tempo = Int
-
+-- | The tempo in beats per minute, the volume for 0 to 127.
 data Control = Control
   { _tempo  :: Int
   , _volume :: Int
@@ -86,11 +88,15 @@ data Control = Control
 
 makeLenses '' Control
 
+-- Cutom monad ecapsulating a drum machine. Controls such as volume and
+-- tempo are the state.
 type DrumMachine = StateT Control Song
 
+-- | Contert the drum maching into a Song to be played
 runDrumMachine :: Control -> DrumMachine a -> Song a
 runDrumMachine  = flip evalStateT
 
+-- | Map a function on hits over a song.
 songMap :: (Hit -> Hit) -> Song a -> Song a
 songMap f (Song (c,a)) = Song $ (hmap f c, a)
   where
@@ -115,22 +121,27 @@ instance Monad Song where
     in  Song ((Chain b b'), a')
 
 -------------------------------------------------------------------------------
-
+-- | Unwarp a command.
 execSong :: Song a -> Command
 execSong = fst . unSong
 
+-- | Wrap a command.
 song :: Command -> a -> Song a
 song b a = Song (b, a)
 
+-- | Convenience function to wrap Commands with a = ().
 song' :: Command -> Song'
 song' b = song b ()
 
+-- | Convert a hit to a 'Song ()'.
 strike :: Hit -> Song'
 strike h = song (Prim h) ()
 
+-- | Change the tempo anywhere in a song.
 bpm :: Int -> Song'
 bpm = song' . BPM
 
+-- | Change the volume.
 level :: Int -> Song'
 level = song' . Vol
 
@@ -139,14 +150,11 @@ instance Monoid (Song') where
   mempty        = Song (None, ())
   mappend b1 b2 = Song (Par (execSong b1) (execSong b2), ())
 
-mkCommand :: [Hit] -> Song'
-mkCommand hits = song (mkComp hits) ()
-  where
-    mkComp hits = foldr1 Chain (map Prim hits)
-
+-- | Loop a song forever.
 orbit :: Song a -> Song a
 orbit b = b >> orbit b
 
+-- | Replicate a song n times.
 clone :: Int -> Song a -> Song a
 clone 1 b = b
 clone n b = b >> clone (n-1) b

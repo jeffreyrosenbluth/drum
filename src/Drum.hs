@@ -6,16 +6,18 @@ import Control.Lens
 quarter :: Int
 quarter = 60000
 
+-- | Make an instrumet that plays for 0 seconds at 0 volumes.
+--   Conenient when used with other commads to set them.
 atom :: Sound -> Song'
-atom t = n4 . strike $ hit t 0 0
+atom t = note 4 . strike $ hit t 0 0
 
-n16, n8, n4, n2, n1, dot :: Song' -> Song'
-n16 = songMap (\h -> (h & dur .~ round (fromIntegral quarter / 4)))
-n8  = songMap (\h -> (h & dur .~ round (fromIntegral quarter / 2)))
-n4  = songMap (\h -> (h & dur .~ quarter))
-n2  = songMap (\h -> (h & dur .~ (2 * quarter)))
-n1  = songMap (\h -> (h & dur .~ (4 * quarter)))
-dot = songMap (\h -> h & dur %~ (\d -> round (fromIntegral d * 1.5)))
+-- | Convenience function for setting the duration of a note.
+note :: Int -> Song' -> Song'
+note n = songMap (\h -> h & dur .~ 4 * quarter `div` n)
+
+-- | Make a dotted rhythm.
+dot :: Song' -> Song'
+dot = songMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
 
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
@@ -75,5 +77,6 @@ opCuica = atom OpenCuica
 muTrngl = atom MuteTriangle
 opTrngl = atom OpenTriangle
 
+-- | A rest
 rest :: Song'
-rest = n4 . strike $ hit BassDrum1 0 0
+rest = note 4 . strike $ hit BassDrum1 0 0

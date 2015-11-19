@@ -6,6 +6,7 @@ import Compose
 import Control.Lens
 import Control.Monad.State
 -------------------------------------------------------------------------------
+-- | Prepare a song and it's controls to be played.
 interpret :: Control -> Song a -> [Hit]
 interpret t = toHits . runDrumMachine t . adjustDurs
 

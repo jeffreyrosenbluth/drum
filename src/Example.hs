@@ -21,7 +21,7 @@ bs = do
    bass
    snare
    bass
-   n8 snare
+   note 8 $ snare
    dot bass
    snare
 
@@ -29,24 +29,27 @@ test :: Song'
 test = crash >> song (BPM 60) () >> crash
 
 h8, h12, trill, hats :: Song'
-h8    = clone 8 (n8 hiHat)
-h12   = clone 12 (n8 hiHat)
-trill = clone 8 (n16 hiHat)
+h8    = clone 8 (note 8 $ hiHat)
+h12   = clone 12 (note 8 $ hiHat)
+trill = clone 8 (note 16 $ hiHat)
 hats  = do
   h8
   trill
   h12
   trill
-  hiHat
-  hiHat
-  hiHat
+  clone 3 hiHat
 
 trap :: Song'
-trap = hats <> (n1 bass >> n1 snare >> n1 bass >> n1 snare) >> crash >> ride
+trap = hats <> (b >> s >> b >> s)
+            >> crash
+            >> ride
+  where
+    s = note 1 $ snare
+    b = note 1 $ bass
 
 house :: Song'
-house = mconcat [ orbit (dot $ n8 rest >> hiHat)
-                , orbit (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
+house = mconcat [ orbit (dot $ note 8 $ rest >> hiHat)
+                , orbit (note 8 $ rest >> hiHat >> hiHat >> hiHat >> hiHat)
                 , orbit bass
                 ]
 

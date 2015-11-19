@@ -1,6 +1,8 @@
 module Play
   ( play
+  , play'
   , loop
+  , loop'
   )
 where
 
@@ -28,21 +30,32 @@ getConnection = do
       [] -> error "No MIDI Devices found."
       (dst:_) -> openDestination dst
 
+-- | Play a song given tempo in beats per minute and volume for 0 to 127.
 play :: Song a -> Int -> Int -> IO ()
-play comp t v = do
+play s t v = do
     let c = Control t v
     conn <- getConnection
     start conn
-    evalStateT runComposition (conn, interpret c comp)
+    evalStateT runComposition (conn, interpret c s)
     close conn
 
+-- | Play a song with tempo and volume set to defaults
+play' :: Song a -> IO ()
+play' s = play s 120 100
+
+-- | Loop a song forever, given tempo in beats per minute and
+--   volume for 0 to 127.
 loop :: Song a -> Int -> Int -> IO ()
-loop comp t v = do
+loop s t v = do
   let c = Control t v
   conn <- getConnection
   start conn
-  evalStateT runComposition (conn, interpret c $ orbit comp)
+  evalStateT runComposition (conn, interpret c $ orbit s)
   close conn
+
+-- | Loop a song with volume and tempo set to defaults.
+loop' :: Song a -> IO ()
+loop' s = loop s 120 100
 
 runComposition :: StateT (Connection, [Hit]) IO ()
 runComposition = do
