@@ -9,12 +9,12 @@ module Compose
   , vol
   , dur
   , Beat(..)
-  , emptyC
-  , SongM
+  , SongM(..)
   , Song
+  , SongMonad
+  , runSongMonad
   , cmap
   , execSongM
-  , SongM
   , strike
   , mkBeat
   , orbit
@@ -24,6 +24,7 @@ module Compose
 
 import Control.Applicative
 import Control.Monad
+import Control.Monad.Reader
 import Data.Monoid
 import Control.Lens
 -------------------------------------------------------------------------------
@@ -58,14 +59,19 @@ data Beat =
     Prim  Hit
   | Chain Beat Beat
   | Par   Beat Beat
+  | None
   deriving (Show)
-
-emptyC :: Beat
-emptyC = Prim (Hit BassDrum1 0 0)
 
 type Song = SongM ()
 
 newtype SongM a = SongM {unSongM :: (Beat, a)}
+
+type Tempo = Int
+
+type SongMonad = ReaderT Tempo SongM
+
+runSongMonad :: SongMonad a -> SongM a
+runSongMonad sm = runReaderT sm 160
 
 cmap :: (Hit -> Hit) -> SongM a -> SongM a
 cmap f (SongM (c,a)) = SongM $ (hmap f c, a)
@@ -84,7 +90,7 @@ instance Applicative SongM where
 -- | This is basically a writer monad specialized to accumulating Beats
 --   horizontally.
 instance Monad SongM where
-  return a = SongM (emptyC, a)
+  return a = SongM (None, a)
   SongM (c, a) >>= k =
     let (SongM (c', a')) = k a
     in  SongM ((Chain c c'), a')
@@ -102,7 +108,7 @@ strike = song . Prim
 
 -- | Play two Beats in parallel.
 instance Monoid (SongM ()) where
-  mempty        = SongM (emptyC, ())
+  mempty        = SongM (None, ())
   mappend c1 c2 = SongM (Par (execSongM c1) (execSongM c2), ())
 
 mkBeat :: [Hit] -> Song

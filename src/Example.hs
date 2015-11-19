@@ -15,7 +15,7 @@ beat1 = (hiHat >> hiHat >> hiHat >> hiHat) <> (bass >> snare >> bass >> snare)
 -- Demonstrate do notation for sequencing.
 -- 'orbit' make an infinite sequence.
 bs :: Song
-bs = orbit $ do
+bs = do
    bass
    snare
    bass
@@ -24,6 +24,9 @@ bs = orbit $ do
    n8 snare
    dot bass
    snare
+
+test :: Song
+test = crash >> crash
 
 h8, h12, trill, hats :: Song
 h8    = clone 8 (n8 hiHat)
@@ -45,6 +48,11 @@ house :: Song
 house = mconcat [ orbit (dot $ n8 rest >> hiHat)
                 , orbit (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
                 , orbit bass
+                ]
+house1 :: Song
+house1 = mconcat [  (dot $ n8 rest >> hiHat)
+                ,  (n8 rest >> hiHat >> hiHat >> hiHat >> hiHat)
+                ,  bass
                 ]
 
 sample :: Song

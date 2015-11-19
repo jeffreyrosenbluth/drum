@@ -7,7 +7,7 @@ volume :: Int
 volume = 100
 
 quarter :: Int
-quarter = 280
+quarter = 60000
 
 atom :: Sound -> Song
 atom t = n4 . strike $ hit t 0 volume

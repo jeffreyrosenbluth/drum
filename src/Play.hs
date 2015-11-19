@@ -1,5 +1,6 @@
 module Play
   ( play
+  , play'
   , loop
   )
 where
@@ -33,6 +34,13 @@ play comp = do
     conn <- getConnection
     start conn
     evalStateT runComposition (conn, interpret comp)
+    close conn
+
+play' :: Song -> IO ()
+play' comp = do
+    conn <- getConnection
+    start conn
+    evalStateT runComposition (conn, interpret . runSongMonad $ mkSM comp)
     close conn
 
 loop :: SongM a -> IO ()
