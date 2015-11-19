@@ -27,7 +27,7 @@ module Compose
 
 import Control.Applicative
 import Control.Monad
-import Control.Monad.Reader
+import Control.Monad.State
 import Data.Monoid
 import Control.Lens
 -------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ data Beat =
     Prim  Hit
   | Chain Beat Beat
   | Par   Beat Beat
-  | BPM
+  | BPM   Int
   | None
   deriving (Show)
 
@@ -72,10 +72,10 @@ newtype SongM a = SongM {unSongM :: (Beat, a)}
 
 type Tempo = Int
 
-type SongMonad = ReaderT Tempo SongM
+type SongMonad = StateT Tempo SongM
 
 runSongMonad :: Tempo -> SongMonad a -> SongM a
-runSongMonad  = flip runReaderT
+runSongMonad  = flip evalStateT
 
 songMap :: (Hit -> Hit) -> SongM a -> SongM a
 songMap f (SongM (c,a)) = SongM $ (hmap f c, a)
