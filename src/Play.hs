@@ -1,6 +1,5 @@
 module Play
   ( play
-  , play'
   , loop
   )
 where
@@ -29,25 +28,18 @@ getConnection = do
       [] -> error "No MIDI Devices found."
       (dst:_) -> openDestination dst
 
-play :: Song -> IO ()
-play comp = do
+play :: SongM a -> Tempo -> IO ()
+play comp t = do
     conn <- getConnection
     start conn
-    evalStateT runComposition (conn, interpret comp)
+    evalStateT runComposition (conn, interpret t comp)
     close conn
 
-play' :: Song -> IO ()
-play' comp = do
-    conn <- getConnection
-    start conn
-    evalStateT runComposition (conn, interpret . runSongMonad $ mkSM comp)
-    close conn
-
-loop :: SongM a -> IO ()
-loop comp = do
+loop :: SongM a -> Tempo -> IO ()
+loop comp t = do
   conn <- getConnection
   start conn
-  evalStateT runComposition (conn, interpret $ orbit comp)
+  evalStateT runComposition (conn, interpret t $ orbit comp)
   close conn
 
 runComposition :: StateT (Connection, [Hit]) IO ()

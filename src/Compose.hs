@@ -12,6 +12,7 @@ module Compose
   , SongM(..)
   , Song
   , SongMonad
+  , Tempo
   , runSongMonad
   , cmap
   , execSongM
@@ -70,8 +71,8 @@ type Tempo = Int
 
 type SongMonad = ReaderT Tempo SongM
 
-runSongMonad :: SongMonad a -> SongM a
-runSongMonad sm = runReaderT sm 160
+runSongMonad :: Tempo -> SongMonad a -> SongM a
+runSongMonad  = flip runReaderT
 
 cmap :: (Hit -> Hit) -> SongM a -> SongM a
 cmap f (SongM (c,a)) = SongM $ (hmap f c, a)

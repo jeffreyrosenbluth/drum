@@ -1,12 +1,13 @@
 module Interpret
   ( interpret
-  , mkSM
   ) where
 
 import Compose
 import Control.Lens
 import Control.Monad.Reader
 -------------------------------------------------------------------------------
+interpret :: Tempo -> SongM a -> [Hit]
+interpret t = toHits . runSongMonad t . adjustDurs
 
 par :: [Hit] -> [Hit] -> [Hit]
 par [] ys = ys
@@ -21,16 +22,16 @@ totalDur (Chain c1 c2) = totalDur c1 + totalDur c2
 totalDur (Par c1 c2)   = max (totalDur c1) (totalDur c2)
 totalDur None          = 0
 
-interpret :: SongM a -> [Hit]
-interpret comp = go 0 (execSongM comp)
+toHits :: SongM a -> [Hit]
+toHits comp = go 0 (execSongM comp)
   where
     go d (Prim   h)    = [h & dur .~ d]
     go d (Chain c1 c2) = go d c1 ++ go (d + totalDur c1) c2
     go d (Par   c1 c2) = go d c1 `par` go d c2
     go d None          = []
 
-mkSM :: SongM a -> SongMonad a
-mkSM sm = go $ unSongM sm
+adjustDurs :: SongM a -> SongMonad a
+adjustDurs sm = go $ unSongM sm
   where
     go (Prim h, a) = do
       d <- ask
