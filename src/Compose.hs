@@ -8,18 +8,18 @@ module Compose
   , tone
   , vol
   , dur
-  , Beat(..)
-  , SongM(..)
-  , Song
-  , SongMonad
-  , songM
+  , Command(..)
+  , Song(..)
+  , Song'
+  , DrumMachine
+  , song
   , song
   , Tempo
-  , runSongMonad
+  , runDrumMachine
   , songMap
-  , execSongM
+  , execSong
   , strike
-  , mkBeat
+  , mkCommand
   , orbit
   , clone
 
@@ -58,76 +58,75 @@ makeLenses ''Hit
 hit :: Sound -> Int -> Int -> Hit
 hit t d v = Hit t d v
 
-data Beat =
+data Command =
     Prim  Hit
-  | Chain Beat Beat
-  | Par   Beat Beat
+  | Chain Command Command
+  | Par   Command Command
   | BPM   Int
   | None
   deriving (Show)
 
-type Song = SongM ()
+-- type Song = Song ()
 
-newtype SongM a = SongM {unSongM :: (Beat, a)}
+newtype Song a = Song {unSong :: (Command, a)}
+
+type Song' = Song ()
 
 type Tempo = Int
 
-type SongMonad = StateT Tempo SongM
+type DrumMachine = StateT Tempo Song
 
-runSongMonad :: Tempo -> SongMonad a -> SongM a
-runSongMonad  = flip evalStateT
+runDrumMachine :: Tempo -> DrumMachine a -> Song a
+runDrumMachine  = flip evalStateT
 
-songMap :: (Hit -> Hit) -> SongM a -> SongM a
-songMap f (SongM (c,a)) = SongM $ (hmap f c, a)
+songMap :: (Hit -> Hit) -> Song a -> Song a
+songMap f (Song (c,a)) = Song $ (hmap f c, a)
   where
     hmap f (Prim h)      = Prim  (f h)
     hmap f (Chain b1 b2) = Chain (hmap f b1) (hmap f b2)
     hmap f (Par   b1 b2) = Par   (hmap f b1) (hmap f b2)
     hmap _ b             = b
 
-instance Functor SongM where
+instance Functor Song where
   fmap = liftM
 
-instance Applicative SongM where
+instance Applicative Song where
   pure  = return
   (<*>) = ap
 
--- | This is basically a writer monad specialized to accumulating Beats
+-- | This is basically a writer monad specialized to accumulating Commands
 --   horizontally.
-instance Monad SongM where
-  return a = SongM (None, a)
-  SongM (b, a) >>= k =
-    let (SongM (b', a')) = k a
-    in  SongM ((Chain b b'), a')
+instance Monad Song where
+  return a = Song (None, a)
+  Song (b, a) >>= k =
+    let (Song (b', a')) = k a
+    in  Song ((Chain b b'), a')
 
 -------------------------------------------------------------------------------
 
-execSongM :: SongM a -> Beat
-execSongM = fst . unSongM
+execSong :: Song a -> Command
+execSong = fst . unSong
 
-songM :: Beat -> a -> SongM a
-songM b a = SongM (b, a)
+song :: Command -> a -> Song a
+song b a = Song (b, a)
 
-song :: Beat -> Song
-song b = SongM (b, ())
+strike :: Hit -> Song'
+strike h = song (Prim h) ()
 
-strike :: Hit -> Song
-strike = song . Prim
+-- | Play two Commands in parallel.
+instance Monoid (Song') where
+  mempty        = Song (None, ())
+  mappend b1 b2 = Song (Par (execSong b1) (execSong b2), ())
 
--- | Play two Beats in parallel.
-instance Monoid (SongM ()) where
-  mempty        = SongM (None, ())
-  mappend b1 b2 = SongM (Par (execSongM b1) (execSongM b2), ())
-
-mkBeat :: [Hit] -> Song
-mkBeat hits = song $ mkComp hits
+mkCommand :: [Hit] -> Song'
+mkCommand hits = song (mkComp hits) ()
   where
     mkComp hits = foldr1 Chain (map Prim hits)
 
-orbit :: SongM a -> SongM a
+orbit :: Song a -> Song a
 orbit b = b >> orbit b
 
-clone :: Int -> SongM a -> SongM a
+clone :: Int -> Song a -> Song a
 clone 1 b = b
 clone n b = b >> clone (n-1) b
 --------------------------------------------------------------------------------
