@@ -3,14 +3,11 @@ module Drum where
 import Compose
 import Control.Lens
 
-volume :: Int
-volume = 100
-
 quarter :: Int
 quarter = 60000
 
 atom :: Sound -> Song'
-atom t = n4 . strike $ hit t 0 volume
+atom t = n4 . strike $ hit t 0 0
 
 n16, n8, n4, n2, n1, dot :: Song' -> Song'
 n16 = songMap (\h -> (h & dur .~ round (fromIntegral quarter / 4)))

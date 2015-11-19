@@ -59,7 +59,7 @@ sample = do
     snare2
     hiHat
     crash
-    song (BPM 500) ()
+    bpm 500
     ride
     cow
     hiTom
@@ -72,6 +72,7 @@ sample = do
     midTom
     opHat
     midTom2
+    level 32
     hiTom2
     chinese
     rideBl
@@ -89,13 +90,14 @@ sample = do
     hiAgogo
     loAgogo
     cabasa
-    song (BPM 120) ()
+    bpm 120
     maracas
     sWhistl
     lWhistl
     sGuiro
     lGuiro
     claves
+    level 100
     hiWdBlk
     loWdBlk
     muCuica

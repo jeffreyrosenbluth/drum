@@ -11,10 +11,14 @@ module Compose
   , Command(..)
   , Song(..)
   , Song'
+  , Control(..)
+  , tempo
+  , volume
   , DrumMachine
   , song
-  , song
-  , Tempo
+  , song'
+  , bpm
+  , level
   , runDrumMachine
   , songMap
   , execSong
@@ -63,6 +67,7 @@ data Command =
   | Chain Command Command
   | Par   Command Command
   | BPM   Int
+  | Vol   Int
   | None
   deriving (Show)
 
@@ -74,9 +79,16 @@ type Song' = Song ()
 
 type Tempo = Int
 
-type DrumMachine = StateT Tempo Song
+data Control = Control
+  { _tempo  :: Int
+  , _volume :: Int
+  }
 
-runDrumMachine :: Tempo -> DrumMachine a -> Song a
+makeLenses '' Control
+
+type DrumMachine = StateT Control Song
+
+runDrumMachine :: Control -> DrumMachine a -> Song a
 runDrumMachine  = flip evalStateT
 
 songMap :: (Hit -> Hit) -> Song a -> Song a
@@ -110,8 +122,17 @@ execSong = fst . unSong
 song :: Command -> a -> Song a
 song b a = Song (b, a)
 
+song' :: Command -> Song'
+song' b = song b ()
+
 strike :: Hit -> Song'
 strike h = song (Prim h) ()
+
+bpm :: Int -> Song'
+bpm = song' . BPM
+
+level :: Int -> Song'
+level = song' . Vol
 
 -- | Play two Commands in parallel.
 instance Monoid (Song') where
