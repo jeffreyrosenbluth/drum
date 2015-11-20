@@ -6,10 +6,13 @@ import Control.Lens
 quarter :: Int
 quarter = 60000
 
+volume :: Int
+volume = 100
+
 -- | Make an instrumet that plays for 0 seconds at 0 volumes.
 --   Conenient when used with other commads to set them.
 atom :: Sound -> Song
-atom t = note 4 . strike $ hit t 0 0
+atom t = note 4 . strike $ hit t 0 volume
 
 -- | Convenience function for setting the duration of a note.
 note :: Int -> Song -> Song

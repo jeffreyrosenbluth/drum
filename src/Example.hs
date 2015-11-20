@@ -26,8 +26,7 @@ bs = do
    snare
 
 ftb :: Song
-ftb = bpm 89 >> level 64 >>
-     (s16 >> s16 >> s16 >> s32 >> s32
+ftb = (s16 >> s16 >> s16 >> s32 >> s32
    >> r16 >> s32 >> r32 >> r16 >> s32 >> s32
    >> s16 >> r16 >> s32 >> r32 >> s32 >> s32
    >> r16 >> s32 >> r32 >> s32 >> s32 >> r16)
@@ -45,7 +44,7 @@ ftb = bpm 89 >> level 64 >>
     t32 = note 32 $ snare
 
 test :: Song
-test = level 50 >> crash >> level 127 >> crash
+test = crash >> crash
 
 h8, h12, trill, hats :: Song
 h8    = clone 8 (note 8 $ hiHat)
@@ -81,7 +80,6 @@ sample = do
     snare2
     hiHat
     crash
-    bpm 500
     ride
     cow
     hiTom
@@ -94,7 +92,6 @@ sample = do
     midTom
     opHat
     midTom2
-    level 32
     hiTom2
     chinese
     rideBl
@@ -112,14 +109,12 @@ sample = do
     hiAgogo
     loAgogo
     cabasa
-    bpm 120
     maracas
     sWhistl
     lWhistl
     sGuiro
     lGuiro
     claves
-    level 100
     hiWdBlk
     loWdBlk
     muCuica

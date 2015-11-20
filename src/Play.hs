@@ -31,31 +31,29 @@ getConnection = do
       (dst:_) -> openDestination dst
 
 -- | Play a song given tempo in beats per minute and volume for 0 to 127.
-play :: Sequence a -> Int -> Int -> IO ()
-play s t v = do
-    let c = Control t v
+play :: Sequence a -> Int -> IO ()
+play s t = do
     conn <- getConnection
     start conn
-    evalStateT runComposition (conn, interpret c s)
+    evalStateT runComposition (conn, interpret t s)
     close conn
 
 -- | Play a song with tempo and volume set to defaults
 play' :: Sequence a -> IO ()
-play' s = play s 120 100
+play' s = play s 120
 
 -- | Loop a song forever, given tempo in beats per minute and
 --   volume for 0 to 127.
-loop :: Sequence a -> Int -> Int -> IO ()
-loop s t v = do
-  let c = Control t v
+loop :: Sequence a -> Int -> IO ()
+loop s t = do
   conn <- getConnection
   start conn
-  evalStateT runComposition (conn, interpret c $ orbit s)
+  evalStateT runComposition (conn, interpret t $ orbit s)
   close conn
 
 -- | Loop a song with volume and tempo set to defaults.
 loop' :: Sequence a -> IO ()
-loop' s = loop s 120 100
+loop' s = loop s 120
 
 runComposition :: StateT (Connection, [Hit]) IO ()
 runComposition = do

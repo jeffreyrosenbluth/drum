@@ -11,14 +11,10 @@ module Compose
   , Command(..)
   , Sequence(..)
   , Song
-  , Control(..)
-  , tempo
-  , volume
+  , Tempo
   , SequenceR
   , seque
   , song
-  , bpm
-  , level
   , runSequenceR
   , sequeMap
   , execSequence
@@ -30,7 +26,7 @@ module Compose
 
 import Control.Applicative
 import Control.Monad
-import Control.Monad.State
+import Control.Monad.Reader
 import Data.Monoid
 import Control.Lens
 -------------------------------------------------------------------------------
@@ -71,8 +67,6 @@ data Command =
     Prim  Hit
   | Chain Command Command
   | Par   Command Command
-  | BPM   Int
-  | Vol   Int
   | None
   deriving (Show)
 
@@ -81,20 +75,15 @@ newtype Sequence a = Sequence {unSequence :: (Command, a)}
 type Song = Sequence ()
 
 -- | The tempo in beats per minute, the volume for 0 to 127.
-data Control = Control
-  { _tempo  :: Int
-  , _volume :: Int
-  }
-
-makeLenses '' Control
+type Tempo = Int
 
 -- Cutom monad ecapsulating a drum machine. Controls such as volume and
 -- tempo are the state.
-type SequenceR = StateT Control Sequence
+type SequenceR = ReaderT Tempo Sequence
 
 -- | Contert the drum maching into a Sequence to be played
-runSequenceR :: Control -> SequenceR a -> Sequence a
-runSequenceR  = flip evalStateT
+runSequenceR :: Tempo -> SequenceR a -> Sequence a
+runSequenceR  = flip runReaderT
 
 -- | Map a function on hits over a song.
 sequeMap :: (Hit -> Hit) -> Sequence a -> Sequence a
@@ -136,14 +125,6 @@ song b = seque b ()
 -- | Convert a hit to a 'Sequence ()'.
 strike :: Hit -> Song
 strike h = seque (Prim h) ()
-
--- | Change the tempo anywhere in a song.
-bpm :: Int -> Song
-bpm = song . BPM
-
--- | Change the volume.
-level :: Int -> Song
-level = song . Vol
 
 -- | Play two Commands in parallel.
 instance Monoid (Song) where
