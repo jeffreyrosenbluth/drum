@@ -9,19 +9,19 @@ module Compose
   , vol
   , dur
   , Command(..)
-  , Song(..)
-  , Song'
+  , Sequence(..)
+  , Song
   , Control(..)
   , tempo
   , volume
-  , DrumMachine
+  , SequenceR
   , song
   , song'
   , bpm
   , level
-  , runDrumMachine
+  , runSequenceR
   , songMap
-  , execSong
+  , execSequence
   , strike
   , orbit
   , clone
@@ -76,9 +76,9 @@ data Command =
   | None
   deriving (Show)
 
-newtype Song a = Song {unSong :: (Command, a)}
+newtype Sequence a = Sequence {unSequence :: (Command, a)}
 
-type Song' = Song ()
+type Song = Sequence ()
 
 -- | The tempo in beats per minute, the volume for 0 to 127.
 data Control = Control
@@ -90,72 +90,72 @@ makeLenses '' Control
 
 -- Cutom monad ecapsulating a drum machine. Controls such as volume and
 -- tempo are the state.
-type DrumMachine = StateT Control Song
+type SequenceR = StateT Control Sequence
 
--- | Contert the drum maching into a Song to be played
-runDrumMachine :: Control -> DrumMachine a -> Song a
-runDrumMachine  = flip evalStateT
+-- | Contert the drum maching into a Sequence to be played
+runSequenceR :: Control -> SequenceR a -> Sequence a
+runSequenceR  = flip evalStateT
 
 -- | Map a function on hits over a song.
-songMap :: (Hit -> Hit) -> Song a -> Song a
-songMap f (Song (c,a)) = Song $ (hmap f c, a)
+songMap :: (Hit -> Hit) -> Sequence a -> Sequence a
+songMap f (Sequence (c,a)) = Sequence $ (hmap f c, a)
   where
     hmap f (Prim h)      = Prim  (f h)
     hmap f (Chain b1 b2) = Chain (hmap f b1) (hmap f b2)
     hmap f (Par   b1 b2) = Par   (hmap f b1) (hmap f b2)
     hmap _ b             = b
 
-instance Functor Song where
+instance Functor Sequence where
   fmap = liftM
 
-instance Applicative Song where
+instance Applicative Sequence where
   pure  = return
   (<*>) = ap
 
 -- | This is basically a writer monad specialized to accumulating Commands
 --   horizontally.
-instance Monad Song where
-  return a = Song (None, a)
-  Song (b, a) >>= k =
-    let (Song (b', a')) = k a
-    in  Song ((Chain b b'), a')
+instance Monad Sequence where
+  return a = Sequence (None, a)
+  Sequence (b, a) >>= k =
+    let (Sequence (b', a')) = k a
+    in  Sequence ((Chain b b'), a')
 
 -------------------------------------------------------------------------------
 -- | Unwarp a command.
-execSong :: Song a -> Command
-execSong = fst . unSong
+execSequence :: Sequence a -> Command
+execSequence = fst . unSequence
 
 -- | Wrap a command.
-song :: Command -> a -> Song a
-song b a = Song (b, a)
+song :: Command -> a -> Sequence a
+song b a = Sequence (b, a)
 
 -- | Convenience function to wrap Commands with a = ().
-song' :: Command -> Song'
+song' :: Command -> Song
 song' b = song b ()
 
--- | Convert a hit to a 'Song ()'.
-strike :: Hit -> Song'
+-- | Convert a hit to a 'Sequence ()'.
+strike :: Hit -> Song
 strike h = song (Prim h) ()
 
 -- | Change the tempo anywhere in a song.
-bpm :: Int -> Song'
+bpm :: Int -> Song
 bpm = song' . BPM
 
 -- | Change the volume.
-level :: Int -> Song'
+level :: Int -> Song
 level = song' . Vol
 
 -- | Play two Commands in parallel.
-instance Monoid (Song') where
-  mempty        = Song (None, ())
-  mappend b1 b2 = Song (Par (execSong b1) (execSong b2), ())
+instance Monoid (Song) where
+  mempty        = Sequence (None, ())
+  mappend b1 b2 = Sequence (Par (execSequence b1) (execSequence b2), ())
 
 -- | Loop a song forever.
-orbit :: Song a -> Song a
+orbit :: Sequence a -> Sequence a
 orbit b = b >> orbit b
 
 -- | Replicate a song n times.
-clone :: Int -> Song a -> Song a
+clone :: Int -> Sequence a -> Sequence a
 clone 1 b = b
 clone n b = b >> clone (n-1) b
 --------------------------------------------------------------------------------

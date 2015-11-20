@@ -7,8 +7,8 @@ import Control.Lens
 import Control.Monad.State
 -------------------------------------------------------------------------------
 -- | Prepare a song and it's controls to be played.
-interpret :: Control -> Song a -> [Hit]
-interpret t = toHits . runDrumMachine t . adjustDurs
+interpret :: Control -> Sequence a -> [Hit]
+interpret t = toHits . runSequenceR t . control
 
 par :: [Hit] -> [Hit] -> [Hit]
 par [] ys = ys
@@ -23,16 +23,16 @@ totalDur (Chain b1 b2) = totalDur b1 + totalDur b2
 totalDur (Par b1 b2)   = max (totalDur b1) (totalDur b2)
 totalDur _             = 0
 
-toHits :: Song a -> [Hit]
-toHits comp = go 0 (execSong comp)
+toHits :: Sequence a -> [Hit]
+toHits comp = go 0 (execSequence comp)
   where
     go d (Prim h)      = [h & dur .~ d]
     go d (Chain b1 b2) = go d b1 ++ go (d + totalDur b1) b2
     go d (Par   b1 b2) = go d b1 `par` go d b2
     go _ _             = []
 
-adjustDurs :: Song a -> DrumMachine a
-adjustDurs sm = go $ unSong sm
+control :: Sequence a -> SequenceR a
+control sm = go $ unSequence sm
   where
     go (Prim h, a) = do
       d <- get
@@ -43,8 +43,8 @@ adjustDurs sm = go $ unSong sm
       go (b2, a)
     go (Par b1 b2, a) = do
       d <- get
-      let (Song (t1, b)) = runDrumMachine d (go (b1, a))
-      let (Song (t2, c)) = runDrumMachine d (go (b2, a))
+      let (Sequence (t1, b)) = runSequenceR d (go (b1, a))
+      let (Sequence (t2, c)) = runSequenceR d (go (b2, a))
       lift $ song (Par t1 t2) c
     go (BPM n, a)  = do
        tempo .= n

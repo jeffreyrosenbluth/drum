@@ -9,12 +9,12 @@ import Play
 
 -- Use >> to sequence
 -- Use <> to play in parallel.
-beat1 :: Song'
+beat1 :: Song
 beat1 = (hiHat >> hiHat >> hiHat >> hiHat) <> (bass >> snare >> bass >> snare)
 
 -- Demonstrate do notation for sequencing.
 -- 'orbit' make an infinite sequence.
-bs :: Song'
+bs :: Song
 bs = do
    bass
    snare
@@ -25,12 +25,13 @@ bs = do
    dot bass
    snare
 
-ftb :: Song'
-ftb = (s16 >> s16 >> s16 >> s32 >> s32
+ftb :: Song
+ftb = bpm 89 >> level 64 >>
+     (s16 >> s16 >> s16 >> s32 >> s32
    >> r16 >> s32 >> r32 >> r16 >> s32 >> s32
    >> s16 >> r16 >> s32 >> r32 >> s32 >> s32
    >> r16 >> s32 >> r32 >> s32 >> s32 >> r16)
-   <> (rest >> level 30
+   <> (rest
    >> t16 >> r32 >> t32 >> r16 >> t32 >> t32
    >> r16 >> t16 >> r32 >> t32 >> r16
    >> t16 >> r32 >> t32 >> r16 >> t32 >> t32)
@@ -43,10 +44,10 @@ ftb = (s16 >> s16 >> s16 >> s32 >> s32
     t16 = note 16 $ snare
     t32 = note 32 $ snare
 
-test :: Song'
-test = crash >> song (BPM 60) () >> crash
+test :: Song
+test = level 50 >> crash >> level 127 >> crash
 
-h8, h12, trill, hats :: Song'
+h8, h12, trill, hats :: Song
 h8    = clone 8 (note 8 $ hiHat)
 h12   = clone 12 (note 8 $ hiHat)
 trill = clone 8 (note 16 $ hiHat)
@@ -57,7 +58,7 @@ hats  = do
   trill
   clone 3 hiHat
 
-trap :: Song'
+trap :: Song
 trap = hats <> (b >> s >> b >> s)
             >> crash
             >> ride
@@ -65,13 +66,13 @@ trap = hats <> (b >> s >> b >> s)
     s = note 1 $ snare
     b = note 1 $ bass
 
-house :: Song'
+house :: Song
 house = mconcat [ orbit (dot $ note 8 $ rest >> hiHat)
                 , orbit (note 8 $ rest >> hiHat >> hiHat >> hiHat >> hiHat)
                 , orbit bass
                 ]
 
-sample :: Song'
+sample :: Song
 sample = do
     bass2
     bass
