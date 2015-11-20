@@ -72,7 +72,7 @@ house = mconcat [ orbit (dot $ note 8 $ rest >> hiHat)
                 ]
 
 sample :: Song
-sample = scaleBPM 3 $ do
+sample = scaleBPM 2 . scaleBPM 2 $ do
     bass2
     bass
     stick

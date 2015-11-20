@@ -133,7 +133,7 @@ song b = beat b ()
 
 -- | Convert a hit to a 'Sequence ()'.
 strike :: Hit -> Song
-strike h = beat (Prim h) ()
+strike h = song (Prim h)
 
 -- | Play two Commands in parallel.
 instance Monoid (Song) where
