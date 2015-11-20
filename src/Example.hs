@@ -129,18 +129,23 @@ toxicityIntro = do
   note 16 $ do
     sh >> bass >> rest >> bass
     sh >> rest >> bass >> rest
-    sh >> rest >> riff
+    sh >> rest
+    riff1
   clone 4 (note 32 snare)
   note 16 $ do
-    riff
+    riff1
     cd >> rest >> hiHat >> snare
-    hiHat >> bass >> sh >> rest
+    riff2
     hiHat >> snare >> bc >> rest
     bc >> rest >> hiHat >> sh
-    hiHat >> bass >> sh >> rest
+    riff2
     bass >> rest >> sh >> rest
   where
-    sh = snare <> hiHat -- snareare and closed hi-hat combo
-    bc = bass <> hiHat -- bass and closed hi-hat combo
-    cd = bass <> crash -- bass and crash cymbal combo
-    riff = clone 2 snare >> clone 2 hiTom >> clone 2 hiTom2
+    sh = snare <> hiHat
+    bc = bass  <> hiHat
+    cd = bass  <> crash
+    riff1 = do
+      clone 2 snare
+      clone 2 hiTom
+      clone 2 hiTom2
+    riff2 = hiHat >> bass >> sh >> rest
