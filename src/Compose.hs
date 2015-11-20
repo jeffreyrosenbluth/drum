@@ -15,8 +15,8 @@ module Compose
   , tempo
   , volume
   , SequenceR
+  , seque
   , song
-  , song'
   , bpm
   , level
   , runSequenceR
@@ -126,24 +126,24 @@ execSequence :: Sequence a -> Command
 execSequence = fst . unSequence
 
 -- | Wrap a command.
-song :: Command -> a -> Sequence a
-song b a = Sequence (b, a)
+seque :: Command -> a -> Sequence a
+seque b a = Sequence (b, a)
 
 -- | Convenience function to wrap Commands with a = ().
-song' :: Command -> Song
-song' b = song b ()
+song :: Command -> Song
+song b = seque b ()
 
 -- | Convert a hit to a 'Sequence ()'.
 strike :: Hit -> Song
-strike h = song (Prim h) ()
+strike h = seque (Prim h) ()
 
 -- | Change the tempo anywhere in a song.
 bpm :: Int -> Song
-bpm = song' . BPM
+bpm = song . BPM
 
 -- | Change the volume.
 level :: Int -> Song
-level = song' . Vol
+level = song . Vol
 
 -- | Play two Commands in parallel.
 instance Monoid (Song) where

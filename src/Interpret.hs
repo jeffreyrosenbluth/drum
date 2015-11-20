@@ -36,7 +36,7 @@ control sm = go $ unSequence sm
   where
     go (Prim h, a) = do
       d <- get
-      lift $ song (Prim (h & dur %~ (`div` (d ^. tempo))
+      lift $ seque (Prim (h & dur %~ (`div` (d ^. tempo))
                            & vol .~ (d ^. volume))) a
     go (Chain b1 b2, a) = do
       go (b1, a)
@@ -45,7 +45,7 @@ control sm = go $ unSequence sm
       d <- get
       let (Sequence (t1, b)) = runSequenceR d (go (b1, a))
       let (Sequence (t2, c)) = runSequenceR d (go (b2, a))
-      lift $ song (Par t1 t2) c
+      lift $ seque (Par t1 t2) c
     go (BPM n, a)  = do
        tempo .= n
        return a
