@@ -25,6 +25,24 @@ bs = do
    dot bass
    snare
 
+ftb :: Song'
+ftb = (s16 >> s16 >> s16 >> s32 >> s32
+   >> r16 >> s32 >> r32 >> r16 >> s32 >> s32
+   >> s16 >> r16 >> s32 >> r32 >> s32 >> s32
+   >> r16 >> s32 >> r32 >> s32 >> s32 >> r16)
+   <> (rest >> level 30
+   >> t16 >> r32 >> t32 >> r16 >> t32 >> t32
+   >> r16 >> t16 >> r32 >> t32 >> r16
+   >> t16 >> r32 >> t32 >> r16 >> t32 >> t32)
+   <> clone 2 (note 2 $ bass)
+  where
+    s16 = note 16 $ hiHat
+    s32 = note 32 $ hiHat
+    r16 = note 16 $ rest
+    r32 = note 32 $ rest
+    t16 = note 16 $ snare
+    t32 = note 32 $ snare
+
 test :: Song'
 test = crash >> song (BPM 60) () >> crash
 
