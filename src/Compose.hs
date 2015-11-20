@@ -11,7 +11,9 @@ module Compose
   , Command(..)
   , Beat(..)
   , Song
-  , Tempo
+  , Control(..)
+  , bpm
+  , tempo
   , SequenceR
   , beat
   , song
@@ -21,6 +23,7 @@ module Compose
   , strike
   , orbit
   , clone
+  , scaleBPM
 
   ) where
 
@@ -67,6 +70,7 @@ data Command =
     Prim  Hit
   | Chain Command Command
   | Par   Command Command
+  | Tempo Double  Command
   | None
   deriving (Show)
 
@@ -74,15 +78,20 @@ newtype Beat a = Beat {unBeat :: (Command, a)}
 
 type Song = Beat ()
 
--- | The tempo in beats per minute, the volume for 0 to 127.
-type Tempo = Int
+
+data Control = Control
+  { _bpm   :: Int
+  , _tempo :: Double
+  }
+
+makeLenses ''Control
 
 -- Cutom monad ecapsulating a drum machine. Controls such as volume and
 -- tempo are the state.
-type SequenceR = ReaderT Tempo Beat
+type SequenceR = ReaderT Control Beat
 
 -- | Contert the drum maching into a Sequence to be played
-runSequenceR :: Tempo -> SequenceR a -> Beat a
+runSequenceR :: Control -> SequenceR a -> Beat a
 runSequenceR  = flip runReaderT
 
 -- | Map a function on hits over a song.
@@ -139,4 +148,9 @@ orbit b = b >> orbit b
 clone :: Int -> Beat a -> Beat a
 clone 1 b = b
 clone n b = b >> clone (n-1) b
+
+scaleBPM :: Double -> Beat a -> Beat a
+scaleBPM x b = beat (Tempo x c) a
+  where
+    (c, a) = unBeat b
 --------------------------------------------------------------------------------

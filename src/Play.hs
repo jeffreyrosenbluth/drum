@@ -32,10 +32,10 @@ getConnection = do
 
 -- | Play a song given tempo in beats per minute and volume for 0 to 127.
 play :: Beat a -> Int -> IO ()
-play s t = do
+play s b = do
     conn <- getConnection
     start conn
-    evalStateT runComposition (conn, interpret t s)
+    evalStateT runComposition (conn, interpret (Control b 1) s)
     close conn
 
 -- | Play a song with tempo and volume set to defaults
@@ -45,10 +45,10 @@ play' s = play s 120
 -- | Loop a song forever, given tempo in beats per minute and
 --   volume for 0 to 127.
 loop :: Beat a -> Int -> IO ()
-loop s t = do
+loop s b = do
   conn <- getConnection
   start conn
-  evalStateT runComposition (conn, interpret t $ orbit s)
+  evalStateT runComposition (conn, interpret (Control b 1) $ orbit s)
   close conn
 
 -- | Loop a song with volume and tempo set to defaults.

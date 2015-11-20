@@ -6,9 +6,9 @@ import Compose
 import Control.Lens
 import Control.Monad.Reader
 -------------------------------------------------------------------------------
--- | Prepare a song and it's applyTempos to be played.
-interpret :: Tempo -> Beat a -> [Hit]
-interpret t = toHits . runSequenceR t . applyTempo
+-- | Prepare a song and it's applyControls to be played.
+interpret :: Control -> Beat a -> [Hit]
+interpret t = toHits . runSequenceR t . applyControl
 
 par :: [Hit] -> [Hit] -> [Hit]
 par [] ys = ys
@@ -31,12 +31,13 @@ toHits comp = go 0 (execBeat comp)
     go d (Par   b1 b2) = go d b1 `par` go d b2
     go _ None          = []
 
-applyTempo :: Beat a -> SequenceR a
-applyTempo sm = go $ unBeat sm
+applyControl :: Beat a -> SequenceR a
+applyControl sm = go $ unBeat sm
   where
     go (Prim h, a) = do
       d <- ask
-      lift $ beat (Prim (h & dur %~ (`div` d))) a
+      let m = round $ fromIntegral (d ^. bpm) * d ^. tempo
+      lift $ beat (Prim (h & dur %~ (`div` m))) a
     go (Chain b1 b2, a) = do
       go (b1, a)
       go (b2, a)
@@ -45,4 +46,6 @@ applyTempo sm = go $ unBeat sm
       let (Beat (t1, b)) = runSequenceR d (go (b1, a))
       let (Beat (t2, c)) = runSequenceR d (go (b2, a))
       lift $ beat (Par t1 t2) c
+    go (Tempo x b, a) = do
+      local (\c -> c & tempo *~ x) (go (b, a))
     go (None, a) = return a
