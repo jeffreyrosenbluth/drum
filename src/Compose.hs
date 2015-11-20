@@ -9,15 +9,15 @@ module Compose
   , vol
   , dur
   , Command(..)
-  , Sequence(..)
+  , Beat(..)
   , Song
   , Tempo
   , SequenceR
-  , seque
+  , beat
   , song
   , runSequenceR
-  , sequeMap
-  , execSequence
+  , beatMap
+  , execBeat
   , strike
   , orbit
   , clone
@@ -70,73 +70,73 @@ data Command =
   | None
   deriving (Show)
 
-newtype Sequence a = Sequence {unSequence :: (Command, a)}
+newtype Beat a = Beat {unBeat :: (Command, a)}
 
-type Song = Sequence ()
+type Song = Beat ()
 
 -- | The tempo in beats per minute, the volume for 0 to 127.
 type Tempo = Int
 
 -- Cutom monad ecapsulating a drum machine. Controls such as volume and
 -- tempo are the state.
-type SequenceR = ReaderT Tempo Sequence
+type SequenceR = ReaderT Tempo Beat
 
 -- | Contert the drum maching into a Sequence to be played
-runSequenceR :: Tempo -> SequenceR a -> Sequence a
+runSequenceR :: Tempo -> SequenceR a -> Beat a
 runSequenceR  = flip runReaderT
 
 -- | Map a function on hits over a song.
-sequeMap :: (Hit -> Hit) -> Sequence a -> Sequence a
-sequeMap f (Sequence (c,a)) = Sequence $ (hmap f c, a)
+beatMap :: (Hit -> Hit) -> Beat a -> Beat a
+beatMap f (Beat (c,a)) = Beat $ (hmap f c, a)
   where
     hmap f (Prim h)      = Prim  (f h)
     hmap f (Chain b1 b2) = Chain (hmap f b1) (hmap f b2)
     hmap f (Par   b1 b2) = Par   (hmap f b1) (hmap f b2)
     hmap _ b             = b
 
-instance Functor Sequence where
+instance Functor Beat where
   fmap = liftM
 
-instance Applicative Sequence where
+instance Applicative Beat where
   pure  = return
   (<*>) = ap
 
 -- | This is basically a writer monad specialized to accumulating Commands
 --   horizontally.
-instance Monad Sequence where
-  return a = Sequence (None, a)
-  Sequence (b, a) >>= k =
-    let (Sequence (b', a')) = k a
-    in  Sequence ((Chain b b'), a')
+instance Monad Beat where
+  return a = Beat (None, a)
+  Beat (b, a) >>= k =
+    let (Beat (b', a')) = k a
+    in  Beat ((Chain b b'), a')
 
 -------------------------------------------------------------------------------
 -- | Unwarp a command.
-execSequence :: Sequence a -> Command
-execSequence = fst . unSequence
+execBeat :: Beat a -> Command
+execBeat = fst . unBeat
 
 -- | Wrap a command.
-seque :: Command -> a -> Sequence a
-seque b a = Sequence (b, a)
+beat :: Command -> a -> Beat a
+beat b a = Beat (b, a)
 
 -- | Convenience function to wrap Commands with a = ().
 song :: Command -> Song
-song b = seque b ()
+song b = beat b ()
 
 -- | Convert a hit to a 'Sequence ()'.
 strike :: Hit -> Song
-strike h = seque (Prim h) ()
+strike h = beat (Prim h) ()
 
 -- | Play two Commands in parallel.
 instance Monoid (Song) where
-  mempty        = Sequence (None, ())
-  mappend b1 b2 = Sequence (Par (execSequence b1) (execSequence b2), ())
+  mempty        = Beat (None, ())
+  mappend b1 b2 = Beat (Par (execBeat b1) (execBeat b2), ())
 
 -- | Loop a song forever.
-orbit :: Sequence a -> Sequence a
+orbit :: Beat a -> Beat a
 orbit b = b >> orbit b
 
 -- | Replicate a song n times.
-clone :: Int -> Sequence a -> Sequence a
+clone :: Int -> Beat a -> Beat a
 clone 1 b = b
 clone n b = b >> clone (n-1) b
 --------------------------------------------------------------------------------

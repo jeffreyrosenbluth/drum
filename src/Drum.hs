@@ -16,15 +16,15 @@ atom t = note 4 . strike $ hit t 0 volume
 
 -- | Convenience function for setting the duration of a note.
 note :: Int -> Song -> Song
-note n = sequeMap (\h -> h & dur .~ 4 * quarter `div` n)
+note n = beatMap (\h -> h & dur .~ 4 * quarter `div` n)
 
 -- | Make a dotted rhythm.
 dot :: Song -> Song
-dot = sequeMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
+dot = beatMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
 
 -- | Set the velocity of a Song
 velocity :: Int -> Song -> Song
-velocity n = sequeMap (\h -> h & vol .~ (max 0 (min 127 n)))
+velocity n = beatMap (\h -> h & vol .~ (max 0 (min 127 n)))
 
 -- | A quarter note rest
 rest :: Song
