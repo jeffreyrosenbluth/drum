@@ -13,11 +13,11 @@ atom t = note 4 . strike $ hit t 0 0
 
 -- | Convenience function for setting the duration of a note.
 note :: Int -> Song -> Song
-note n = songMap (\h -> h & dur .~ 4 * quarter `div` n)
+note n = sequeMap (\h -> h & dur .~ 4 * quarter `div` n)
 
 -- | Make a dotted rhythm.
 dot :: Song -> Song
-dot = songMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
+dot = sequeMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
 
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,

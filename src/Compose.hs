@@ -20,7 +20,7 @@ module Compose
   , bpm
   , level
   , runSequenceR
-  , songMap
+  , sequeMap
   , execSequence
   , strike
   , orbit
@@ -97,8 +97,8 @@ runSequenceR :: Control -> SequenceR a -> Sequence a
 runSequenceR  = flip evalStateT
 
 -- | Map a function on hits over a song.
-songMap :: (Hit -> Hit) -> Sequence a -> Sequence a
-songMap f (Sequence (c,a)) = Sequence $ (hmap f c, a)
+sequeMap :: (Hit -> Hit) -> Sequence a -> Sequence a
+sequeMap f (Sequence (c,a)) = Sequence $ (hmap f c, a)
   where
     hmap f (Prim h)      = Prim  (f h)
     hmap f (Chain b1 b2) = Chain (hmap f b1) (hmap f b2)

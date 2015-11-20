@@ -37,7 +37,7 @@ control sm = go $ unSequence sm
     go (Prim h, a) = do
       d <- get
       lift $ seque (Prim (h & dur %~ (`div` (d ^. tempo))
-                           & vol .~ (d ^. volume))) a
+                            & vol .~ (d ^. volume))) a
     go (Chain b1 b2, a) = do
       go (b1, a)
       go (b2, a)
