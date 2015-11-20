@@ -21,7 +21,7 @@ totalDur :: Command -> Int
 totalDur (Prim hit)    = hit ^. dur
 totalDur (Chain b1 b2) = totalDur b1 + totalDur b2
 totalDur (Par b1 b2)   = max (totalDur b1) (totalDur b2)
-totalDur _             = 0
+totalDur None             = 0
 
 toHits :: Sequence a -> [Hit]
 toHits comp = go 0 (execSequence comp)
@@ -29,7 +29,7 @@ toHits comp = go 0 (execSequence comp)
     go d (Prim h)      = [h & dur .~ d]
     go d (Chain b1 b2) = go d b1 ++ go (d + totalDur b1) b2
     go d (Par   b1 b2) = go d b1 `par` go d b2
-    go _ _             = []
+    go _ None          = []
 
 applyTempo :: Sequence a -> SequenceR a
 applyTempo sm = go $ unSequence sm

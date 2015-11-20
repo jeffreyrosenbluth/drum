@@ -22,6 +22,14 @@ note n = sequeMap (\h -> h & dur .~ 4 * quarter `div` n)
 dot :: Song -> Song
 dot = sequeMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
 
+-- | Set the velocity of a Song
+velocity :: Int -> Song -> Song
+velocity n = sequeMap (\h -> h & vol .~ (max 0 (min 127 n)))
+
+-- | A quarter note rest
+rest :: Song
+rest = note 4 . strike $ hit BassDrum1 0 0
+
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
 --                  mu = mute, s = short, l = long.
@@ -79,7 +87,3 @@ muCuica = atom MuteCuica
 opCuica = atom OpenCuica
 muTrngl = atom MuteTriangle
 opTrngl = atom OpenTriangle
-
--- | A rest
-rest :: Song
-rest = note 4 . strike $ hit BassDrum1 0 0

@@ -121,3 +121,26 @@ sample = do
     opCuica
     muTrngl
     opTrngl
+
+-- | Intro to 'Toxicity' by System of a Down.
+toxicityIntro :: Song
+toxicityIntro = do
+  note 8 bass
+  note 16 $ do
+    sh >> bass >> rest >> bass
+    sh >> rest >> bass >> rest
+    sh >> rest >> riff
+  clone 4 (note 32 snare)
+  note 16 $ do
+    riff
+    cd >> rest >> hiHat >> snare
+    hiHat >> bass >> sh >> rest
+    hiHat >> snare >> bc >> rest
+    bc >> rest >> hiHat >> sh
+    hiHat >> bass >> sh >> rest
+    bass >> rest >> sh >> rest
+  where
+    sh = snare <> hiHat -- snareare and closed hi-hat combo
+    bc = bass <> hiHat -- bass and closed hi-hat combo
+    cd = bass <> crash -- bass and crash cymbal combo
+    riff = clone 2 snare >> clone 2 hiTom >> clone 2 hiTom2
