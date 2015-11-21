@@ -17,7 +17,7 @@ import Compose
 import Interpret
 
 hitToMidiEvent :: Hit -> MidiEvent
-hitToMidiEvent h = MidiEvent d (MidiMessage 1 (NoteOn t v))
+hitToMidiEvent h = MidiEvent d (MidiMessage 10 (NoteOn t v))
   where
     t = 35 + fromEnum (h ^. tone)
     d = fromIntegral $ h ^. dur
