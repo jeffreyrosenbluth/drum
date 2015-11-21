@@ -1,4 +1,4 @@
-module Example where
+module Main where
 
 import Data.Monoid
 
@@ -134,3 +134,6 @@ toxicityIntro = do
       clone 2 hiTom
       clone 2 hiTom2
     riff2 = hiHat >> bass2 >> sh >> rest
+
+main :: IO ()
+main = play trap 220

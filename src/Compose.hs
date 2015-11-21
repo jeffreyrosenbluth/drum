@@ -1,5 +1,7 @@
-{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 module Compose
   ( Sound(..)
@@ -29,11 +31,13 @@ module Compose
 
   ) where
 
+import Control.Lens
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Reader
+import Data.Aeson
 import Data.Monoid
-import Control.Lens
+import GHC.Generics
 -------------------------------------------------------------------------------
 -- | The available instruments.
 data Sound =
@@ -49,7 +53,10 @@ data Sound =
    | ShortWhistle  | LongWhistle   | ShortGuiro   | LongGuiro
    | Claves        | HighWoodBlock | LowWoodBlock | MuteCuica
    | OpenCuica     | MuteTriangle  | OpenTriangle
-   deriving (Show,Eq,Ord,Enum)
+   deriving (Show, Eq, Ord, Enum, Generic)
+
+instance FromJSON Sound
+instance ToJSON Sound
 
 -- | A single drum strike, 'tone' is the instrument, dur the duration, and
 --  vol the volume.
@@ -57,9 +64,12 @@ data Hit = Hit
     { _tone :: Sound
     , _dur  :: Int
     , _vol  :: Int
-    } deriving (Show)
+    } deriving (Show, Generic)
 
 makeLenses ''Hit
+
+instance FromJSON Hit
+instance ToJSON Hit
 
 -- | Constructor fo 'Hit'.
 hit :: Sound -> Int -> Int -> Hit
@@ -75,12 +85,17 @@ data Command =
   | Tempo Double  Command
   | Level Double  Command
   | None
-  deriving (Show)
+  deriving (Show, Generic)
 
-newtype Beat a = Beat {unBeat :: (Command, a)}
+instance FromJSON Command
+instance ToJSON Command
+
+newtype Beat a = Beat {unBeat :: (Command, a)} deriving (Show, Generic)
 
 type Song = Beat ()
 
+instance FromJSON Song
+instance ToJSON Song
 
 data Control = Control
   { _bpm    :: Int
