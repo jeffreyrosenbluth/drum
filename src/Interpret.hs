@@ -29,7 +29,7 @@ toHits comp = go 0 (execBeat comp)
     go d (Prim h)      = [h & dur .~ d]
     go d (Chain b1 b2) = go d b1 ++ go (d + totalDur b1) b2
     go d (Par   b1 b2) = go d b1 `par` go d b2
-    go _ _          = []
+    go _ _             = []
 
 applyControl :: Beat a -> SequenceR a
 applyControl sm = go $ unBeat sm

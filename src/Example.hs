@@ -143,12 +143,17 @@ sample = scaleBPM 4 $ do
     dec opTrngl
 
 -- | Intro to 'Toxicity' by System of a Down.
+--   Demonstrates use of do, vs '>>' vs sequence_ [...]
 toxicityIntro :: Song
 toxicityIntro = do
   note 8 (velocity 127 bass2)
   note 16 $ do
     sh >> bass2 >> rest >> bass2
-    sh >> rest >> bass2 >> rest
+    -- Instead of:
+    -- sh >> rest >> bass2 >> rest
+    -- We can always use sequence_ if we want to create a list of songs
+    -- so that we can perhaps map over it.
+    sequence_ [sh, rest, bass2, rest]
     sh >> rest
     riff1
   clone 4 (note 32 snare)
