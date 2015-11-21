@@ -14,6 +14,7 @@ module Compose
   , Control(..)
   , bpm
   , tempo
+  , level
   , SequenceR
   , beat
   , song
@@ -24,6 +25,7 @@ module Compose
   , orbit
   , clone
   , scaleBPM
+  , scaleVel
 
   ) where
 
@@ -71,6 +73,7 @@ data Command =
   | Chain Command Command
   | Par   Command Command
   | Tempo Double  Command
+  | Level Double  Command
   | None
   deriving (Show)
 
@@ -80,8 +83,9 @@ type Song = Beat ()
 
 
 data Control = Control
-  { _bpm   :: Int
-  , _tempo :: Double
+  { _bpm    :: Int
+  , _tempo  :: Double
+  , _level  :: Double
   }
 
 makeLenses ''Control
@@ -151,6 +155,11 @@ clone n b = b >> clone (n-1) b
 
 scaleBPM :: Double -> Beat a -> Beat a
 scaleBPM x b = beat (Tempo x c) a
+  where
+    (c, a) = unBeat b
+
+scaleVel :: Double -> Beat a -> Beat a
+scaleVel x b = beat (Level x c) a
   where
     (c, a) = unBeat b
 --------------------------------------------------------------------------------

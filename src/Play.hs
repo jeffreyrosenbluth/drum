@@ -35,7 +35,7 @@ play :: Beat a -> Int -> IO ()
 play s b = do
     conn <- getConnection
     start conn
-    evalStateT runComposition (conn, interpret (Control b 1) s)
+    evalStateT runComposition (conn, interpret (Control b 1 1) s)
     close conn
 
 -- | Play a song with tempo and volume set to defaults
@@ -48,7 +48,7 @@ loop :: Beat a -> Int -> IO ()
 loop s b = do
   conn <- getConnection
   start conn
-  evalStateT runComposition (conn, interpret (Control b 1) $ orbit s)
+  evalStateT runComposition (conn, interpret (Control b 1 1) $ orbit s)
   close conn
 
 -- | Loop a song with volume and tempo set to defaults.
