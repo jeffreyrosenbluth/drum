@@ -92,55 +92,15 @@ house = mconcat [ orbit (dot $ note 8 $ rest >> hiHat)
                 ]
 
 sample :: Song
-sample = scaleBPM 4 $ do
-    dec bass2
-    dec bass
-    dec stick
-    dec snare
-    dec snare2
-    dec hiHat
-    dec crash
-    dec ride
-    dec cow
-    dec hiTom
-    dec tamb
-    dec clap
-    dec loTom2
-    dec clHat
-    dec loTom
-    dec pedal
-    dec midTom
-    dec opHat
-    dec midTom2
-    dec hiTom2
-    dec chinese
-    dec rideBl
-    dec splash
-    dec crash2
-    dec slap
-    dec ride2
-    dec hiBongo
-    dec loBongo
-    dec muConga
-    dec opConga
-    dec loConga
-    dec hiTimb
-    dec loTimb
-    dec hiAgogo
-    dec loAgogo
-    dec cabasa
-    dec maracas
-    dec sWhistl
-    dec lWhistl
-    dec sGuiro
-    dec lGuiro
-    dec claves
-    dec hiWdBlk
-    dec loWdBlk
-    dec muCuica
-    dec opCuica
-    dec muTrngl
-    dec opTrngl
+sample = sequence_ $ map (scaleBPM 4 . dec)
+    [ bass2, bass, stick, snare, snare2, hiHat, crash, ride, cow
+    , hiTom, tamb, clap, loTom2, clHat, loTom, pedal, midTom
+    , opHat, midTom2, hiTom2, chinese, rideBl, splash, crash2
+    , slap , ride2, hiBongo, loBongo, muConga, opConga, loConga
+    , hiTimb, loTimb, hiAgogo, loAgogo, cabasa, maracas, sWhistl
+    , lWhistl, sGuiro, lGuiro, claves, hiWdBlk, loWdBlk, muCuica
+    , opCuica, muTrngl, opTrngl
+    ]
 
 -- | Intro to 'Toxicity' by System of a Down.
 --   Demonstrates use of do, vs '>>' vs sequence_ [...]
