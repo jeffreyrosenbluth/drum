@@ -2,11 +2,12 @@ module Drum where
 
 import Compose
 import Control.Lens
+import Data.Ratio
 
-quarter :: Int
+quarter :: Rational
 quarter = 60000
 
-volume :: Int
+volume :: Rational
 volume = 100
 
 -- | Make an instrumet that plays for 0 seconds at 0 volumes.
@@ -15,15 +16,15 @@ atom :: Sound -> Song
 atom t = note 4 . strike $ hit t 0 volume
 
 -- | Convenience function for setting the duration of a note.
-note :: Int -> Song -> Song
-note n = beatMap (\h -> h & dur .~ 4 * quarter `div` n)
+note :: Rational -> Song -> Song
+note n = beatMap (\h -> h & dur .~ 4 * quarter / n)
 
 -- | Make a dotted rhythm.
 dot :: Song -> Song
-dot = beatMap (\h -> h & dur %~ (\d -> 3 * d `div` 2 ))
+dot = beatMap (\h -> h & dur %~ (* (3 % 2)))
 
 -- | Set the velocity of a Song
-velocity :: Int -> Song -> Song
+velocity :: Rational -> Song -> Song
 velocity n = beatMap (\h -> h & vol .~ (max 0 (min 127 n)))
 
 -- | A quarter note rest

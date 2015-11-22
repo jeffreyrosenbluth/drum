@@ -37,6 +37,7 @@ import Control.Monad
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Monoid
+import Data.Ratio
 import GHC.Generics
 -------------------------------------------------------------------------------
 -- | The available instruments.
@@ -62,8 +63,8 @@ instance ToJSON Sound
 --  vol the volume.
 data Hit = Hit
     { _tone :: Sound
-    , _dur  :: Int
-    , _vol  :: Int
+    , _dur  :: Rational
+    , _vol  :: Rational
     } deriving (Show, Generic)
 
 makeLenses ''Hit
@@ -72,7 +73,7 @@ instance FromJSON Hit
 instance ToJSON Hit
 
 -- | Constructor fo 'Hit'.
-hit :: Sound -> Int -> Int -> Hit
+hit :: Sound -> Rational -> Rational -> Hit
 hit t d v = Hit t d v
 
 -- | The commands the comprixe a song. Prim for a single drum hit. Chain for
@@ -82,8 +83,8 @@ data Command =
     Prim  Hit
   | Chain Command Command
   | Par   Command Command
-  | Tempo Double  Command
-  | Level Double  Command
+  | Tempo Rational  Command
+  | Level Rational  Command
   | None
   deriving (Show, Generic)
 
@@ -98,9 +99,9 @@ instance FromJSON Song
 instance ToJSON Song
 
 data Control = Control
-  { _bpm    :: Int
-  , _tempo  :: Double
-  , _level  :: Double
+  { _bpm    :: Rational
+  , _tempo  :: Rational
+  , _level  :: Rational
   }
 
 makeLenses ''Control
@@ -109,7 +110,7 @@ makeLenses ''Control
 -- tempo are the state.
 type SequenceR = ReaderT Control Beat
 
--- | Contert the drum maching into a Sequence to be played
+-- | Contert the drum maching Rationalo a Sequence to be played
 runSequenceR :: Control -> SequenceR a -> Beat a
 runSequenceR  = flip runReaderT
 
@@ -164,16 +165,16 @@ orbit :: Beat a -> Beat a
 orbit b = b >> orbit b
 
 -- | Replicate a song n times.
-clone :: Int -> Beat a -> Beat a
+clone :: Rational -> Beat a -> Beat a
 clone 1 b = b
 clone n b = b >> clone (n-1) b
 
-scaleBPM :: Double -> Beat a -> Beat a
+scaleBPM :: Rational -> Beat a -> Beat a
 scaleBPM x b = beat (Tempo x c) a
   where
     (c, a) = unBeat b
 
-scaleVel :: Double -> Beat a -> Beat a
+scaleVel :: Rational -> Beat a -> Beat a
 scaleVel x b = beat (Level x c) a
   where
     (c, a) = unBeat b

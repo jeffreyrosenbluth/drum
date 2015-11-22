@@ -17,7 +17,7 @@ par (x:xs) (y:ys)
   | (x ^. dur) <= (y ^. dur) = x : par xs (y:ys)
   | otherwise                = y : par (x:xs) ys
 
-totalDur :: Command -> Int
+totalDur :: Command -> Rational
 totalDur (Prim hit)    = hit ^. dur
 totalDur (Chain b1 b2) = totalDur b1 + totalDur b2
 totalDur (Par b1 b2)   = max (totalDur b1) (totalDur b2)
@@ -36,10 +36,10 @@ applyControl sm = go $ unBeat sm
   where
     go (Prim h, a) = do
       d <- ask
-      let m = round $ fromIntegral (d ^. bpm) * d ^. tempo
-          v = round $ fromIntegral (h ^. vol) * d ^. level
+      let m = d ^. bpm * d ^. tempo
+          v = h ^. vol * d ^. level
           v' = max 0 (min v 127)
-      lift $ beat (Prim (h & dur %~ (`div` m)
+      lift $ beat (Prim (h & dur %~ (/ m)
                            & vol .~  v)) a
     go (Chain b1 b2, a) = do
       go (b1, a)

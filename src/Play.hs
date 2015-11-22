@@ -15,13 +15,15 @@ import System.Info
 
 import Compose
 import Interpret
+import Data.Ratio
 
 hitToMidiEvent :: Hit -> MidiEvent
 hitToMidiEvent h = MidiEvent d (MidiMessage 10 (NoteOn t v))
   where
     t = 35 + fromEnum (h ^. tone)
-    d = fromIntegral $ h ^. dur
-    v = h ^. vol
+    d = fromRational $ h ^. dur
+    v = fromRational $ h ^. vol
+    fromRational r = fromIntegral $ numerator r `div` denominator r
 
 getConnection :: IO Connection
 getConnection = do
@@ -31,7 +33,7 @@ getConnection = do
       (dst:_) -> openDestination dst
 
 -- | Play a song given tempo in beats per minute and volume for 0 to 127.
-play :: Beat a -> Int -> IO ()
+play :: Beat a -> Rational -> IO ()
 play s b = do
     conn <- getConnection
     start conn
@@ -44,7 +46,7 @@ play' s = play s 120
 
 -- | Loop a song forever, given tempo in beats per minute and
 --   volume for 0 to 127.
-loop :: Beat a -> Int -> IO ()
+loop :: Beat a -> Rational -> IO ()
 loop s b = do
   conn <- getConnection
   start conn
