@@ -9,6 +9,9 @@ module Drum
   , velocity
   , rest
 
+  , n1, n2, n4, n8, n16, n32, n64
+  , r1, r2, r4, r8, r16, r32, r64
+
   , bass2
   , bass
   , stick
@@ -106,8 +109,28 @@ velocity :: Rational -> Song -> Song
 velocity n = beatMap (\h -> h & vol .~ (max 0 (min 127 n)))
 
 -- | A quarter note rest
-rest :: Song
-rest = note 4 . strike $ hit BassDrum1 0 0
+rest :: Rational -> Song
+rest n = note n . strike $ hit BassDrum1 0 0
+
+-- | Convenience functions to create notes of various durations.
+n1, n2, n4, n8, n16, n32, n64 :: Song -> Song
+n1  = note 1
+n2  = note 2
+n4  = note 4
+n8  = note 8
+n16 = note 16
+n32 = note 32
+n64 = note 164
+
+-- | Rests
+r1, r2, r4, r8, r16, r32, r64 :: Song
+r1  = rest 1
+r2  = rest 2
+r4  = rest 4
+r8  = rest 8
+r16 = rest 16
+r32 = rest 32
+r64 = rest 64
 
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
