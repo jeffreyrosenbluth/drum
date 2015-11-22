@@ -2,7 +2,7 @@ module Main where
 
 import Data.Monoid
 
-import Compose
+import Core
 import Interpret
 import Drum
 import Play

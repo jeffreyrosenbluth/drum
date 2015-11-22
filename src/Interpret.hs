@@ -2,7 +2,7 @@ module Interpret
   ( interpret
   ) where
 
-import Compose
+import Core
 import Control.Lens
 import Control.Monad.Reader
 -------------------------------------------------------------------------------

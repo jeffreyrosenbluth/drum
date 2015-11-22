@@ -13,7 +13,8 @@ import Control.Concurrent
 import System.MIDI
 import System.Info
 
-import Compose
+import Core
+import Drum
 import Interpret
 import Data.Ratio
 

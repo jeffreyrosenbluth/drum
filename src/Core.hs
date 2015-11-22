@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
-module Compose
+module Core
   ( Sound(..)
   , Hit
   , hit
@@ -24,10 +24,6 @@ module Compose
   , beatMap
   , execBeat
   , strike
-  , orbit
-  , clone
-  , scaleBPM
-  , scaleVel
 
   ) where
 
@@ -159,23 +155,4 @@ strike h = song (Prim h)
 instance Monoid (Song) where
   mempty        = Beat (None, ())
   mappend b1 b2 = Beat (Par (execBeat b1) (execBeat b2), ())
-
--- | Loop a song forever.
-orbit :: Beat a -> Beat a
-orbit b = b >> orbit b
-
--- | Replicate a song n times.
-clone :: Rational -> Beat a -> Beat a
-clone 1 b = b
-clone n b = b >> clone (n-1) b
-
-scaleBPM :: Rational -> Beat a -> Beat a
-scaleBPM x b = beat (Tempo x c) a
-  where
-    (c, a) = unBeat b
-
-scaleVel :: Rational -> Beat a -> Beat a
-scaleVel x b = beat (Level x c) a
-  where
-    (c, a) = unBeat b
 --------------------------------------------------------------------------------

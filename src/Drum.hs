@@ -1,6 +1,65 @@
-module Drum where
+module Drum
+  ( orbit
+  , clone
+  , scaleBPM
+  , scaleVel
+  , atom
+  , note
+  , dot
+  , velocity
+  , rest
 
-import Compose
+  , bass2
+  , bass
+  , stick
+  , snare
+  , snare2
+  , hiHat
+  , crash
+  , ride
+  , cow
+  , hiTom
+  , tamb
+  , clap
+  , loTom2
+  , clHat
+  , loTom
+  , pedal
+  , midTom
+  , opHat
+  , midTom2
+  , hiTom2
+  , chinese
+  , rideBl
+  , splash
+  , crash2
+  , slap
+  , ride2
+  , hiBongo
+  , loBongo
+  , muConga
+  , opConga
+  , loConga
+  , hiTimb, loTimb
+  , hiAgogo
+  , loAgogo
+  , cabasa
+  , maracas
+  , sWhistl
+  , lWhistl
+  , sGuiro
+  , lGuiro
+  , claves
+  , hiWdBlk
+  , loWdBlk
+  , muCuica
+  , opCuica
+  , muTrngl
+  , opTrngl
+
+  ) where
+
+import Core
 import Control.Lens
 import Data.Ratio
 
@@ -9,6 +68,25 @@ quarter = 60000
 
 volume :: Rational
 volume = 100
+
+-- | Loop a song forever.
+orbit :: Beat a -> Beat a
+orbit b = b >> orbit b
+
+-- | Replicate a song n times.
+clone :: Rational -> Beat a -> Beat a
+clone 1 b = b
+clone n b = b >> clone (n-1) b
+
+scaleBPM :: Rational -> Beat a -> Beat a
+scaleBPM x b = beat (Tempo x c) a
+  where
+    (c, a) = unBeat b
+
+scaleVel :: Rational -> Beat a -> Beat a
+scaleVel x b = beat (Level x c) a
+  where
+    (c, a) = unBeat b
 
 -- | Make an instrumet that plays for 0 seconds at 0 volumes.
 --   Conenient when used with other commads to set them.
