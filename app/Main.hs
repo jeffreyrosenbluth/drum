@@ -10,7 +10,9 @@ import Play
 -- Use >> to sequence
 -- Use <> to play in parallel.
 beat1 :: Song
-beat1 = (hiHat >> hiHat >> hiHat >> hiHat) <> (bass >> snare >> bass >> snare)
+beat1 = clone 4 . note 8
+      $ (hiHat >> hiHat >> hiHat >> hiHat)
+     <> (bass >> snare >> bass >> snare)
 
 -- Demonstrate do notation for sequencing.
 -- 'orbit' make an infinite sequence.
@@ -25,8 +27,15 @@ bs = do
    dot bass
    snare
 
+simple :: Song
+simple = clone 4 . scaleBPM 2
+       $ (clone 4 clHat) <> (bass2 >> r4 >> snare >> r4)
+
+doubleBass :: Song
+doubleBass = clone 6 . scaleBPM 6 $ note 3 ( clHat <> (clone 3 bass2) )
+
 ftb :: Song
-ftb = velocity 80 (s16 >> s16 >> s16 >> s32 >> s32
+ftb = scaleBPM (1/2) $ velocity 80 (s16 >> s16 >> s16 >> s32 >> s32
    >> r16 >> s32 >> r32 >> r16 >> s32 >> s32
    >> s16 >> r16 >> s32 >> r32 >> s32 >> s32
    >> r16 >> s32 >> r32 >> s32 >> s32 >> r16)
@@ -36,10 +45,10 @@ ftb = velocity 80 (s16 >> s16 >> s16 >> s32 >> s32
    >> t16 >> r32 >> t32 >> r16 >> t32 >> t32)
    <> clone 2 (n2 $ (velocity 127 bass2))
   where
-    s16 = n16 $ hiHat
-    s32 = n32 $ hiHat
+    s16 = n16 $ sWhistl
+    s32 = n32 $ opConga
     t16 = n16 $ snare
-    t32 = n32 $ snare
+    t32 = n32 $ cow
 
 dec :: Song -> Song
 dec instr = do
@@ -103,7 +112,7 @@ sample = sequence_ $ map (scaleBPM 4 . dec)
 -- | Intro to 'Toxicity' by System of a Down.
 --   Demonstrates use of do, vs '>>' vs sequence_ [...]
 toxicityIntro :: Song
-toxicityIntro = do
+toxicityIntro = clone 3 $ do
   n8 (velocity 127 bass2)
   n16 $ do
     sh >> bass2 >> r4 >> bass2
