@@ -104,9 +104,9 @@ trap = hats <> (b >> s >> b >> s)
     b = n1 $ bass2
 
 house :: Song
-house = mconcat [ orbit (dot $ n8 $ r4 >> hiHat)
-                , orbit (n8 $ r4 >> hiHat >> hiHat >> hiHat >> hiHat)
-                , orbit bass2
+house = mconcat [ (dot $ n8 $ r4 >> hiHat)
+                , (n8 $ r4 >> hiHat >> hiHat >> hiHat >> hiHat)
+                , bass2
                 ]
 
 sample :: Song
@@ -154,4 +154,15 @@ toxicityIntro = clone 3 $ do
     riff2 = hiHat >> bass2 >> sh >> r4
 
 main :: IO ()
-main = play trap 220
+main = play' $ do
+  beat1
+  bs
+  simple
+  doubleBass
+  ftb
+  wdm
+  cresc_decresc
+  scaleBPM 2 $ trap
+  house
+  sample
+  toxicityIntro
