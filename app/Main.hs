@@ -50,6 +50,17 @@ ftb = scaleBPM (1/2) $ velocity 80 (s16 >> s16 >> s16 >> s32 >> s32
     t16 = n16 $ snare
     t32 = n32 $ cow
 
+wdm :: Song
+wdm = clone 4 . scaleBPM 4 $
+      (accent bass2 >> bass2 >> clone 6 r4 >> clone 2 (accent bass2 >> bass2) >> r4)
+   <> (r1 >> accent snare >> r1 >> snare >> snare >> r4 >> accent snare >> clone 3 r4)
+   <> (clone 4 (r4 >> hiHat >> accent hiHat >> hiHat))
+   <> (clone 7 r4 >> accent loTom >> loTom >> accent loTom >> loTom >> clone 5 r4)
+   <> (clone 14 r4 >> accent loTom2 >> r4)
+   <> (clone 6 r4 >> accent hiTom >> hiTom >> clone 8 r4)
+  --  where
+  --    accent = velocity 127
+
 dec :: Song -> Song
 dec instr = do
   velocity 125 instr

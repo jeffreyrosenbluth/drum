@@ -12,6 +12,8 @@ module Drum
   , n1, n2, n4, n8, n16, n32, n64
   , r1, r2, r4, r8, r16, r32, r64
 
+  , accent
+
   , bass2
   , bass
   , stick
@@ -70,7 +72,7 @@ quarter :: Rational
 quarter = 60000
 
 volume :: Rational
-volume = 100
+volume = 92
 
 -- | Loop a song forever.
 orbit :: Beat a -> Beat a
@@ -132,6 +134,8 @@ r16 = rest 16
 r32 = rest 32
 r64 = rest 64
 
+accent :: Song -> Song
+accent = velocity 127
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
 --                  mu = mute, s = short, l = long.
