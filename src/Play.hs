@@ -36,10 +36,12 @@ getConnection = do
 -- | Play a song given tempo in beats per minute and volume for 0 to 127.
 play :: Beat a -> Rational -> IO ()
 play s b = do
-    conn <- getConnection
-    start conn
-    evalStateT runComposition (conn, interpret (Control b 1 1) s)
-    close conn
+    forkIO $ do
+      conn <- getConnection
+      start conn
+      evalStateT runComposition (conn, interpret (Control b 1 1) s)
+      close conn
+    return ()
 
 -- | Play a song with tempo and volume set to defaults
 play' :: Beat a -> IO ()
