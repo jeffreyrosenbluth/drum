@@ -5,6 +5,7 @@ import Data.Monoid
 import Core
 import Interpret
 import Drum
+import Dseq
 import Play
 
 -- Use >> to sequence
@@ -152,6 +153,19 @@ toxicityIntro = clone 3 $ do
       clone 2 hiTom
       clone 2 hiTom2
     riff2 = hiHat >> bass2 >> sh >> r4
+
+icecube :: Song
+icecube = measure BassDrum1   8 "7... .... 7... .... 7... .... 7.77 .7.."
+       <> measure BassDrum2   8 ".... 7... .... 7... .... 7... .... 7..."
+       <> measure SnareDrum2  8 ".... 4... .... 4... .... 4... .... 4..."
+       <> measure ClosedHihat 8 "7.7. 7.77 .77. 7.77 7.7. 7.77 .77. ...."
+       <> measure OpenHihat   8 ".... .... .... .... .... .... .... .7.."
+
+reed :: Song
+reed = measure BassDrum1   8 "7... 7... 7... 7..."
+    <> measure ClosedHihat 8 "..7. ..7. ..7. ..77"
+    <> measure RideCymbal1 8 "...5 .... .... ...."
+    <> measure HandClap    8 ".... .... .... ...5"
 
 main :: IO ()
 main = play' $ do

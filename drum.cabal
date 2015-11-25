@@ -20,7 +20,8 @@ library
   exposed-modules:     Core,
                        Play,
                        Interpret,
-                       Drum
+                       Drum,
+                       Dseq
   -- other-modules:
   -- other-extensions:
   build-depends:       base >=4.6 && <4.9
