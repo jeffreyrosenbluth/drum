@@ -1,12 +1,12 @@
 module Dseq
-  ( measure
+  ( dseq
   ) where
 
 import Core
 import Drum
 
-measure :: Sound -> Rational -> [Char] -> Song
-measure s n cs = sequence_ $ zipWith velocity vs ts
+dseq :: Sound -> Rational -> [Char] -> Song
+dseq s n cs = sequence_ $ zipWith velocity vs ts
   where
     vs = map toVol (filter (`elem` ".0123456789") cs)
     ts = repeat $ note n (atom s)
