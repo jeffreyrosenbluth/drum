@@ -167,6 +167,10 @@ reed = dseq BassDrum1   8 "7... 7... 7... 7..."
     <> dseq RideCymbal1 8 "...5 .... .... ...."
     <> dseq HandClap    8 ".... .... .... ...5"
 
+trips :: Song
+trips = dseq BassDrum1    8 "7...   7...   7...   7..."
+     <> dseq ClosedHihat 12 "955955 955955 955955 955955"
+
 main :: IO ()
 main = play' $ do
   beat1
