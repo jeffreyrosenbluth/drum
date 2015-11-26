@@ -170,9 +170,9 @@ trips = dseq BassDrum1    8 "7...   7...   7...   7..."
      <> dseq ClosedHihat 12 "955955 955955 955955 955955"
 
 funkyDrummer :: Song
-funkyDrummer = dseq BassDrum1   8 "7.7...7...7..7.."
-            <> dseq SnareDrum1  8 "....7..7.7.77..7"
-            <> dseq ClosedHihat 8 "7777777.77777.77"
+funkyDrummer = dseq BassDrum1   8 "5.5...5...5..5.."
+            <> dseq SnareDrum1  8 "....3..3.3.33..3"
+            <> dseq ClosedHihat 8 "5555555.55555.55"
             <> dseq OpenHihat   8 ".......7.....7.."
 
 

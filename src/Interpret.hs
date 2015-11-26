@@ -39,7 +39,7 @@ applyControl sm = go $ unBeat sm
       let m = d ^. bpm * d ^. tempo
           v = h ^. vol * d ^. level
           v' = max 0 (min v 127)
-      lift $ beat (Prim (h & dur %~ (/ m)
+      lift $ beat (Prim (h & dur *~ (60000 / m)
                            & vol .~  v)) a
     go (Chain b1 b2, a) = do
       go (b1, a)
@@ -51,6 +51,6 @@ applyControl sm = go $ unBeat sm
       lift $ beat (Par t1 t2) c
     go (Tempo x b, a) = do
       local (\c -> c & tempo *~ x) (go (b, a))
-    go (Level x b, a) = 
+    go (Level x b, a) =
       local (\c -> c & level *~ x) (go (b, a))
     go (None, a) = return a

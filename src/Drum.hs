@@ -68,9 +68,6 @@ import Core
 import Control.Lens
 import Data.Ratio
 
-quarter :: Rational
-quarter = 60000
-
 volume :: Rational
 volume = 92
 
@@ -100,11 +97,11 @@ atom t = note 4 . strike $ hit t 0 volume
 
 -- | Convenience function for setting the duration of a note.
 note :: Rational -> Song -> Song
-note n = beatMap (\h -> h & dur .~ 4 * quarter / n)
+note n = beatMap (\h -> h & dur .~ 4 / n)
 
 -- | Make a dotted rhythm.
 dot :: Song -> Song
-dot = beatMap (\h -> h & dur %~ (* (3 % 2)))
+dot = beatMap (\h -> h & dur *~ (3 / 2))
 
 -- | Set the velocity of a Song
 velocity :: Rational -> Song -> Song
