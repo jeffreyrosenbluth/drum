@@ -19,7 +19,7 @@ import Interpret
 import Data.Ratio
 
 hitToMidiEvent :: Hit -> MidiEvent
-hitToMidiEvent h = MidiEvent d (MidiMessage 10 (NoteOn t v))
+hitToMidiEvent h = MidiEvent d (MidiMessage 1 (NoteOn t v))
   where
     t = 35 + fromEnum (h ^. tone)
     d = fromRational $ h ^. dur
@@ -36,12 +36,10 @@ getConnection = do
 -- | Play a song given tempo in beats per minute and volume for 0 to 127.
 play :: Beat a -> Rational -> IO ()
 play s b = do
-    forkIO $ do
-      conn <- getConnection
-      start conn
-      evalStateT runComposition (conn, interpret (Control b 1 1) s)
-      close conn
-    return ()
+    conn <- getConnection
+    start conn
+    evalStateT runComposition (conn, interpret (Control b 1 1) s)
+    close conn
 
 -- | Play a song with tempo and volume set to defaults
 play' :: Beat a -> IO ()
