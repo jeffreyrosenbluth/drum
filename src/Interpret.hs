@@ -51,6 +51,6 @@ applyControl sm = go $ unBeat sm
       lift $ beat (Par t1 t2) c
     go (Tempo x b, a) = do
       local (\c -> c & tempo *~ x) (go (b, a))
-    go (Level x b, a) = do
+    go (Level x b, a) = 
       local (\c -> c & level *~ x) (go (b, a))
     go (None, a) = return a

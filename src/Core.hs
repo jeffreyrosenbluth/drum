@@ -70,7 +70,7 @@ instance ToJSON Hit
 
 -- | Constructor fo 'Hit'.
 hit :: Sound -> Rational -> Rational -> Hit
-hit t d v = Hit t d v
+hit = Hit
 
 -- | The commands the comprixe a song. Prim for a single drum hit. Chain for
 --   a sequence of hits. Par for making to sequences run in parallel. And BPM,
@@ -112,7 +112,7 @@ runSequenceR  = flip runReaderT
 
 -- | Map a function on hits over a song.
 beatMap :: (Hit -> Hit) -> Beat a -> Beat a
-beatMap f (Beat (c,a)) = Beat $ (hmap f c, a)
+beatMap f (Beat (c,a)) = Beat (hmap f c, a)
   where
     hmap f (Prim h)      = Prim  (f h)
     hmap f (Chain b1 b2) = Chain (hmap f b1) (hmap f b2)
@@ -132,7 +132,7 @@ instance Monad Beat where
   return a = Beat (None, a)
   Beat (b, a) >>= k =
     let (Beat (b', a')) = k a
-    in  Beat ((Chain b b'), a')
+    in  Beat (Chain b b', a')
 
 -------------------------------------------------------------------------------
 -- | Unwarp a command.

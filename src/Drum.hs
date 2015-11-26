@@ -108,7 +108,7 @@ dot = beatMap (\h -> h & dur %~ (* (3 % 2)))
 
 -- | Set the velocity of a Song
 velocity :: Rational -> Song -> Song
-velocity n = beatMap (\h -> h & vol .~ (max 0 (min 127 n)))
+velocity n = beatMap (\h -> h & vol .~ max 0 (min 127 n))
 
 -- | A quarter note rest
 rest :: Rational -> Song
