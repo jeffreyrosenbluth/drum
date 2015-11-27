@@ -1,3 +1,13 @@
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Drum
+-- Author      : Jeffrey Rosenbluth
+-- Copyright   : (c) 2015, Jeffrey Rosenbluth
+--
+-- Intruments and Convenience functions for 'drum'.
+--
+-------------------------------------------------------------------------------
+
 module Drum
   ( orbit
   , clone

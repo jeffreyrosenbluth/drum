@@ -3,6 +3,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Core
+-- Author      : Jeffrey Rosenbluth
+-- Copyright   : (c) 2015, Jeffrey Rosenbluth
+--
+-- Core types and functions for 'drum'
+--
+--------------------------------------------------------------------------------
+
 module Core
   ( Sound(..)
   , Hit

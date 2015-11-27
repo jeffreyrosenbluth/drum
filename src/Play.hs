@@ -1,3 +1,13 @@
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Play
+-- Author      : Jeffrey Rosenbluth
+-- Copyright   : (c) 2015, Jeffrey Rosenbluth
+--
+-- Interface to synth.
+--
+-------------------------------------------------------------------------------
+
 module Play
   ( play
   , play'
@@ -34,29 +44,29 @@ getConnection = do
       (dst:_) -> openDestination dst
 
 -- | Play a song given tempo in beats per minute and volume for 0 to 127.
-play :: Beat a -> Rational -> IO ()
-play s b = do
+play' :: Beat a -> Rational -> IO ()
+play' s b = do
     conn <- getConnection
     start conn
     evalStateT runComposition (conn, interpret (Control b 1 1) s)
     close conn
 
 -- | Play a song with tempo and volume set to defaults
-play' :: Beat a -> IO ()
-play' s = play s 120
+play :: Beat a -> IO ()
+play s = play' s 120
 
 -- | Loop a song forever, given tempo in beats per minute and
 --   volume for 0 to 127.
-loop :: Beat a -> Rational -> IO ()
-loop s b = do
+loop' :: Beat a -> Rational -> IO ()
+loop' s b = do
   conn <- getConnection
   start conn
   evalStateT runComposition (conn, interpret (Control b 1 1) $ orbit s)
   close conn
 
 -- | Loop a song with volume and tempo set to defaults.
-loop' :: Beat a -> IO ()
-loop' s = loop s 120
+loop :: Beat a -> IO ()
+loop s = loop' s 120
 
 runComposition :: StateT (Connection, [Hit]) IO ()
 runComposition = do

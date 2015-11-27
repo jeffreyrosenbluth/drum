@@ -1,3 +1,13 @@
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  Interpret
+-- Author      : Jeffrey Rosenbluth
+-- Copyright   : (c) 2015, Jeffrey Rosenbluth
+--
+-- Convert 'drum' to Midi.
+--
+-------------------------------------------------------------------------------
+
 module Interpret
   ( interpret
   ) where

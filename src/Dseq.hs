@@ -1,3 +1,15 @@
+--------------------------------------------------------------------------------
+-- |
+-- Module      :  DSeq
+-- Author      : Jeffrey Rosenbluth
+-- Copyright   : (c) 2015, Jeffrey Rosenbluth
+--
+-- A Drum Maching Micro-Language, base on
+-- http://www.csounds.com/journal/issue8/dseq.html
+-- by Jacob Joaquin
+-- CSOUND JOURNAL: Home | issue8
+--------------------------------------------------------------------------------
+
 module Dseq
   ( dseq
   ) where
