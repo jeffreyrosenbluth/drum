@@ -14,14 +14,14 @@ dseq s n cs = zipWithM_ velocity vs ts
 
 toVol :: Char -> Rational
 toVol '.' = 0
-toVol '0' = 10
-toVol '1' = 20
-toVol '2' = 35
-toVol '3' = 50
-toVol '4' = 66
+toVol '0' = 20
+toVol '1' = 40
+toVol '2' = 50
+toVol '3' = 60
+toVol '4' = 70
 toVol '5' = 80
-toVol '6' = 92
-toVol '7' = 104
-toVol '8' = 116
-toVol '9' = 127
+toVol '6' = 90
+toVol '7' = 100
+toVol '8' = 110
+toVol '9' = 120
 toVol  _  = error "The sky is falling"
