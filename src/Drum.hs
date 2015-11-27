@@ -16,7 +16,7 @@ module Drum
   , atom
   , note
   , dot
-  , velocity
+  , vel
   , rest
 
   , n1, n2, n4, n8, n16, n32, n64
@@ -107,15 +107,15 @@ atom t = note 4 . strike $ hit t 0 volume
 
 -- | Convenience function for setting the duration of a note.
 note :: Rational -> Song -> Song
-note n = beatMap (\h -> h & dur .~ 4 / n)
+note n = beatMap (\h -> h & duration .~ 4 / n)
 
 -- | Make a dotted rhythm.
 dot :: Song -> Song
-dot = beatMap (\h -> h & dur *~ (3 / 2))
+dot = beatMap (\h -> h & duration *~ (3 / 2))
 
 -- | Set the velocity of a Song
-velocity :: Rational -> Song -> Song
-velocity n = beatMap (\h -> h & vol .~ max 0 (min 127 n))
+vel :: Rational -> Song -> Song
+vel n = beatMap (\h -> h & velocity .~ max 0 (min 127 n))
 
 -- | A quarter note rest
 rest :: Rational -> Song
@@ -142,7 +142,7 @@ r32 = rest 32
 r64 = rest 64
 
 accent :: Song -> Song
-accent = velocity 127
+accent = vel 120
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
 --                  mu = mute, s = short, l = long.

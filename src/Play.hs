@@ -33,9 +33,9 @@ hitToMidiEvent :: Hit -> MidiEvent
 hitToMidiEvent h = MidiEvent d (MidiMessage 1 (NoteOn t v))
   where
     t = 35 + fromEnum (h ^. tone)
-    d = fromRational $ h ^. dur
-    v = fromRational $ h ^. vol
-    fromRational r = fromIntegral $ numerator r `div` denominator r
+    d = fromRatio $ h ^. duration
+    v = fromRatio $ h ^. velocity
+    fromRatio r = fromIntegral $ numerator r `div` denominator r
 
 getConnection :: IO Connection
 getConnection = do

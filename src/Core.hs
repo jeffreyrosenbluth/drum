@@ -20,8 +20,8 @@ module Core
   , Hit
   , hit
   , tone
-  , vol
-  , dur
+  , velocity
+  , duration
   , Command(..)
   , Beat(..)
   , Song
@@ -39,11 +39,12 @@ module Core
 
   ) where
 
-import Control.Lens
+import Control.Lens          hiding ((.=))
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Reader
 import Data.Aeson
+import Data.Aeson.Types
 import Data.Monoid
 import Data.Ratio
 import GHC.Generics
@@ -70,15 +71,18 @@ instance ToJSON Sound
 -- | A single drum strike, 'tone' is the instrument, dur the duration, and
 --  vol the volume.
 data Hit = Hit
-    { _tone :: Sound
-    , _dur  :: Rational
-    , _vol  :: Rational
+    { _tone      :: Sound
+    , _duration  :: Rational
+    , _velocity  :: Rational
     } deriving (Show, Generic)
 
 makeLenses ''Hit
 
-instance FromJSON Hit
-instance ToJSON Hit
+instance FromJSON Hit where
+  parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 1}
+
+instance ToJSON Hit where
+  toJSON = genericToJSON defaultOptions {fieldLabelModifier = drop 1}
 
 -- | Constructor fo 'Hit'.
 hit :: Sound -> Rational -> Rational -> Hit

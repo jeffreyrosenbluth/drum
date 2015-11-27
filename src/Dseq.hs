@@ -19,7 +19,7 @@ import Drum
 import Control.Monad (zipWithM_)
 
 dseq :: Sound -> Rational -> [Char] -> Song
-dseq s n cs = zipWithM_ velocity vs ts
+dseq s n cs = zipWithM_ vel vs ts
   where
     vs = map toVol (filter (`elem` ".0123456789") cs)
     ts = repeat $ note n (atom s)

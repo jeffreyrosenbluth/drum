@@ -42,15 +42,15 @@ simple = clone 8 . scaleBPM 2
        $ (clone 4 clHat) <> (bass >> r4 >> snare >> r4)
 
 ftb :: Song
-ftb = scaleBPM (1/2) . clone 3 $ velocity 80 (s16 >> s16 >> s16 >> s32 >> s32
+ftb = scaleBPM (1/2) . clone 3 $ vel 80 (s16 >> s16 >> s16 >> s32 >> s32
    >> r16 >> s32 >> r32 >> r16 >> s32 >> s32
    >> s16 >> r16 >> s32 >> r32 >> s32 >> s32
    >> r16 >> s32 >> r32 >> s32 >> s32 >> r16)
-   <> velocity 80 (r4
+   <> vel 80 (r4
    >> t16 >> r32 >> t32 >> r16 >> t32 >> t32
    >> r16 >> t16 >> r32 >> t32 >> r16
    >> t16 >> r32 >> t32 >> r16 >> t32 >> t32)
-   <> clone 2 (n2 $ (velocity 127 bass))
+   <> clone 2 (n2 $ (vel 127 bass))
   where
     s16 = n16 $ sWhistl
     s32 = n32 $ opConga
@@ -66,30 +66,30 @@ wdm = clone 4 . scaleBPM 4 $
    <> (clone 14 r4 >> accent loTom2 >> r4)
    <> (clone 6 r4 >> accent hiTom >> hiTom >> clone 8 r4)
   --  where
-  --    accent = velocity 127
+  --    accent = vel 127
 
 dec :: Song -> Song
 dec instr = do
-  velocity 120 instr
-  velocity 110 instr
-  velocity 95  instr
-  velocity 80  instr
-  velocity 65  instr
-  velocity 50  instr
-  velocity 35  instr
-  velocity 20  instr
-  velocity 35  instr
-  velocity 50  instr
-  velocity 65  instr
-  velocity 80  instr
-  velocity 95  instr
-  velocity 110 instr
-  velocity 120 instr
+  vel 120 instr
+  vel 110 instr
+  vel 95  instr
+  vel 80  instr
+  vel 65  instr
+  vel 50  instr
+  vel 35  instr
+  vel 20  instr
+  vel 35  instr
+  vel 50  instr
+  vel 65  instr
+  vel 80  instr
+  vel 95  instr
+  vel 110 instr
+  vel 120 instr
 
 cresc_decresc :: Song
 cresc_decresc = do
-  sequence_ $ zipWith velocity [20..110] (repeat $ n32 snare)
-  sequence_ $ zipWith velocity [110,109..20] (repeat $ n32 snare)
+  sequence_ $ zipWith vel [20..110] (repeat $ n32 snare)
+  sequence_ $ zipWith vel [110,109..20] (repeat $ n32 snare)
 
 hats :: Song
 hats  = do
@@ -124,7 +124,7 @@ sample = sequence_ $ map (scaleBPM 4 . dec)
 --   Demonstrates use of do, vs '>>' vs sequence_ [...]
 toxicityIntro :: Song
 toxicityIntro = clone 3 $ do
-  n8 (velocity 127 bass)
+  n8 (vel 127 bass)
   n16 $ do
     sh >> bass >> r4 >> bass
     -- Instead of:
