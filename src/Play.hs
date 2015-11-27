@@ -5,7 +5,8 @@
 -- Copyright   : (c) 2015, Jeffrey Rosenbluth
 --
 -- Interface to synth.
---
+-- Mostly copied from: https://github.com/5outh/Bang
+--    Copyright (c) 2014 Benjamin Kovach
 -------------------------------------------------------------------------------
 
 module Play

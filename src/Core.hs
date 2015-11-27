@@ -10,6 +10,8 @@
 -- Copyright   : (c) 2015, Jeffrey Rosenbluth
 --
 -- Core types and functions for 'drum'
+-- Inspired and heavily influenced by: https://github.com/5outh/Bang
+--    Copyright (c) 2014 Benjamin Kovach
 --
 --------------------------------------------------------------------------------
 
