@@ -15,17 +15,19 @@ module Interpret
 import Core
 import Control.Lens
 import Control.Monad.Reader
+import Data.Ratio
+import System.MIDI
 -------------------------------------------------------------------------------
 -- | Prepare a song and it's applyControls to be played.
-interpret :: Control -> Beat a -> [Hit]
-interpret t = toHits . runSequenceR t . applyControl
+interpret :: Control -> Beat a -> [MidiEvent]
+interpret t = toMidiEvents . runSequenceR t . applyControl
 
-par :: [Hit] -> [Hit] -> [Hit]
-par [] ys = ys
-par xs [] = xs
-par (x:xs) (y:ys)
-  | (x ^. duration) <= (y ^. duration) = x : par xs (y:ys)
-  | otherwise                = y : par (x:xs) ys
+merge :: [MidiEvent] -> [MidiEvent] -> [MidiEvent]
+merge [] ys = ys
+merge xs [] = xs
+merge (x@(MidiEvent dx _) : xs) (y@(MidiEvent dy _ ) : ys)
+  | dx <= dy  = x : merge xs (y:ys)
+  | otherwise = y : merge (x:xs) ys
 
 totalDur :: Command -> Rational
 totalDur (Prim hit)    = hit ^. duration
@@ -33,13 +35,18 @@ totalDur (Chain b1 b2) = totalDur b1 + totalDur b2
 totalDur (Par b1 b2)   = max (totalDur b1) (totalDur b2)
 totalDur _             = 0
 
-toHits :: Beat a -> [Hit]
-toHits comp = go 0 (execBeat comp)
+toMidiEvents :: Beat a -> [MidiEvent]
+toMidiEvents beat = go 0 (execBeat beat)
   where
-    go d (Prim h)      = [h & duration .~ d]
+    go d (Prim h) = [MidiEvent d' (MidiMessage 1 (NoteOn t v))]
+      where
+        d' = fromRatio d
+        t = 35 + fromEnum (h ^. tone)
+        v = fromRatio (h ^. velocity)
     go d (Chain b1 b2) = go d b1 ++ go (d + totalDur b1) b2
-    go d (Par   b1 b2) = go d b1 `par` go d b2
+    go d (Par   b1 b2) = go d b1 `merge` go d b2
     go _ _             = []
+    fromRatio r = fromIntegral $ numerator r `div` denominator r
 
 applyControl :: Beat a -> SequenceR a
 applyControl sm = go $ unBeat sm

@@ -29,14 +29,6 @@ import Drum
 import Interpret
 import Data.Ratio
 
-hitToMidiEvent :: Hit -> MidiEvent
-hitToMidiEvent h = MidiEvent d (MidiMessage 1 (NoteOn t v))
-  where
-    t = 35 + fromEnum (h ^. tone)
-    d = fromRatio $ h ^. duration
-    v = fromRatio $ h ^. velocity
-    fromRatio r = fromIntegral $ numerator r `div` denominator r
-
 getConnection :: IO Connection
 getConnection = do
     dstlist <- enumerateDestinations
@@ -69,14 +61,14 @@ loop' s b = do
 loop :: Beat a -> IO ()
 loop s = loop' s 120
 
-runComposition :: StateT (Connection, [Hit]) IO ()
+runComposition :: StateT (Connection, [MidiEvent]) IO ()
 runComposition = do
   (conn, hits) <- get
   t <- lift $ currentTime conn
   case hits of
     []     -> return ()
     (h:hs) -> do
-      let x@(MidiEvent s ev) = hitToMidiEvent h
+      let x@(MidiEvent s ev) = h
       when (s < t) $ do
         put (conn, hs)
         lift $ send conn ev
