@@ -192,18 +192,28 @@ hiphop = scaleBPM 1.5 . clone 2
 
 
 main :: IO ()
-main = play $ do
-  beat1         >> sep
-  bs            >> sep
-  simple        >> sep
-  ftb           >> sep
-  wdm           >> sep
-  cresc_decresc >> sep
-  trap          >> sep
-  toxicityIntro >> sep
-  icecube       >> sep
-  reed          >> sep
-  funkyDrummer  >> sep
-  hiphop
+main = do
+  putStrLn "1. beat1"
+  play $ beat1 >> sep
+  putStrLn "2. bs"
+  play $  bs >> sep
+  putStrLn "3. simple"
+  play $ simple >> sep
+  putStrLn "4. ftb"
+  play $ ftb >> sep
+  putStrLn "5. wdm"
+  play $ wdm >> sep
+  putStrLn "6. trap"
+  play $ trap >> sep
+  putStrLn "7. toxicityIntro"
+  play $ toxicityIntro >> sep
+  putStrLn "8. icecube"
+  play $ icecube >> sep
+  putStrLn "9. reed"
+  play $ reed >> sep
+  putStrLn "10. funkyDrummer"
+  play $ funkyDrummer >> sep
+  putStrLn "11. hiphop"
+  play $ hiphop
   where
     sep = clone 4 stick
