@@ -8,10 +8,11 @@
 -- Module      :  Core
 -- Author      : Jeffrey Rosenbluth
 -- Copyright   : (c) 2015, Jeffrey Rosenbluth
+-- Stability   : experimental
 --
+-- Portability : Mac OSX
 -- Core types and functions for 'drum'
 -- Inspired and heavily influenced by: https://github.com/5outh/Bang
---    Copyright (c) 2014 Benjamin Kovach
 --
 --------------------------------------------------------------------------------
 

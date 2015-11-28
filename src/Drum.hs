@@ -144,6 +144,25 @@ r64 = rest 64
 
 accent :: Song -> Song
 accent = vel 120
+
+backwards :: Beat a -> Beat a
+backwards (Beat (c, a)) = beat (go c) a
+  where
+    go p@(Prim h) = p
+    go (Chain c1 c2) = Chain (go c2) (go c1)
+    go (Par   c1 c2)
+      | dur1 < dur2 = Par (Chain space (go c1)) (go c2)
+      | dur2 < dur1 = Par (go c1) (Chain space (go c2))
+      | otherwise   = Par (go c1) (go c2)
+      where
+        dur1 = totalDur c1
+        dur2 = totalDur c2
+        diff = abs (dur2 - dur1)
+        space =  Prim $ hit BassDrum1 diff 0
+    go (Tempo x c) = Tempo x (go c)
+    go (Level x c) = Level x (go c)
+    go None        = None
+    
 -- | Quarter notes for all instruments in kit.
 --   Abbreviations: hi = high, lo = low, cl = close, op = open,
 --                  mu = mute, s = short, l = long.
@@ -201,21 +220,3 @@ muCuica = atom MuteCuica
 opCuica = atom OpenCuica
 muTrngl = atom MuteTriangle
 opTrngl = atom OpenTriangle
-
-backwards :: Beat a -> Beat a
-backwards (Beat (c, a)) = beat (go c) a
-  where
-    go p@(Prim h) = p
-    go (Chain c1 c2) = Chain (go c2) (go c1)
-    go (Par   c1 c2)
-      | dur1 < dur2 = Par (Chain (space diff) (go c1)) (go c2)
-      | dur2 < dur1 = Par (go c1) (Chain (space diff) (go c2))
-      | otherwise   = Par (go c1) (go c2)
-      where
-        dur1 = totalDur c1
-        dur2 = totalDur c2
-        diff = abs (dur2 - dur1)
-        space n =  Prim $ hit BassDrum1 diff 0
-    go (Tempo x c) = Tempo x (go c)
-    go (Level x c) = Level x (go c)
-    go None        = None
