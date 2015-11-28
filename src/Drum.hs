@@ -23,6 +23,7 @@ module Drum
   , r1, r2, r4, r8, r16, r32, r64
 
   , accent
+  , backwards
 
   , bass2
   , bass
@@ -75,7 +76,7 @@ module Drum
   ) where
 
 import Core
-import Control.Lens
+import Control.Lens hiding (backwards)
 import Data.Ratio
 
 volume :: Rational
@@ -200,3 +201,21 @@ muCuica = atom MuteCuica
 opCuica = atom OpenCuica
 muTrngl = atom MuteTriangle
 opTrngl = atom OpenTriangle
+
+backwards :: Beat a -> Beat a
+backwards (Beat (c, a)) = beat (go c) a
+  where
+    go p@(Prim h) = p
+    go (Chain c1 c2) = Chain (go c2) (go c1)
+    go (Par   c1 c2)
+      | dur1 < dur2 = Par (Chain (space diff) (go c1)) (go c2)
+      | dur2 < dur1 = Par (go c1) (Chain (space diff) (go c2))
+      | otherwise   = Par (go c1) (go c2)
+      where
+        dur1 = totalDur c1
+        dur2 = totalDur c2
+        diff = abs (dur2 - dur1)
+        space n =  Prim $ hit BassDrum1 diff 0
+    go (Tempo x c) = Tempo x (go c)
+    go (Level x c) = Level x (go c)
+    go None        = None

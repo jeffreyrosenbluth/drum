@@ -17,6 +17,7 @@ import Control.Lens
 import Control.Monad.Reader
 import Data.Ratio
 import System.MIDI
+
 -------------------------------------------------------------------------------
 -- | Prepare a song and it's applyControls to be played.
 interpret :: Control -> Beat a -> [MidiEvent]
@@ -28,12 +29,6 @@ merge xs [] = xs
 merge (x@(MidiEvent dx _) : xs) (y@(MidiEvent dy _ ) : ys)
   | dx <= dy  = x : merge xs (y:ys)
   | otherwise = y : merge (x:xs) ys
-
-totalDur :: Command -> Rational
-totalDur (Prim hit)    = hit ^. duration
-totalDur (Chain b1 b2) = totalDur b1 + totalDur b2
-totalDur (Par b1 b2)   = max (totalDur b1) (totalDur b2)
-totalDur _             = 0
 
 toMidiEvents :: Beat a -> [MidiEvent]
 toMidiEvents beat = go 0 (execBeat beat)

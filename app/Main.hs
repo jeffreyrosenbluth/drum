@@ -9,6 +9,7 @@
 -------------------------------------------------------------------------------
 module Main where
 
+import Control.Monad
 import Data.Monoid
 
 import Core
@@ -88,8 +89,8 @@ dec instr = do
 
 cresc_decresc :: Song
 cresc_decresc = do
-  sequence_ $ zipWith vel [20..110] (repeat $ n32 snare)
-  sequence_ $ zipWith vel [110,109..20] (repeat $ n32 snare)
+  zipWithM_ vel [20..110] (repeat $ n32 snare)
+  zipWithM_ vel [110,109..20] (repeat $ n32 snare)
 
 hats :: Song
 hats  = do
@@ -111,7 +112,7 @@ trap = clone 2 $ hats <> (b >> s >> b >> s)
 
 sample :: Song
 sample = sequence_ $ map (scaleBPM 4 . dec)
-    [ bass, bass, stick, snare, snare2, hiHat, crash, ride, cow
+    [ bass, bass2, stick, snare, snare2, hiHat, crash, ride, cow
     , hiTom, tamb, clap, loTom2, clHat, loTom, pedal, midTom
     , opHat, midTom2, hiTom2, chinese, rideBl, splash, crash2
     , slap , ride2, hiBongo, loBongo, muConga, opConga, loConga

@@ -37,6 +37,8 @@ module Core
   , execBeat
   , strike
 
+  , totalDur
+
   ) where
 
 import Control.Lens          hiding ((.=))
@@ -171,4 +173,10 @@ strike h = song (Prim h)
 instance Monoid (Song) where
   mempty        = Beat (None, ())
   mappend b1 b2 = Beat (Par (execBeat b1) (execBeat b2), ())
+
+totalDur :: Command -> Rational
+totalDur (Prim hit)    = hit ^. duration
+totalDur (Chain b1 b2) = totalDur b1 + totalDur b2
+totalDur (Par b1 b2)   = max (totalDur b1) (totalDur b2)
+totalDur _             = 0
 --------------------------------------------------------------------------------
