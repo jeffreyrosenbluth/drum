@@ -17,8 +17,7 @@
 --------------------------------------------------------------------------------
 
 module Core
-  ( Sound(..)
-  , Hit
+  ( Hit
   , hit
   , tone
   , velocity
@@ -40,6 +39,8 @@ module Core
 
   , totalDur
 
+  , Sound(..)
+
   ) where
 
 import Control.Lens          hiding ((.=))
@@ -51,6 +52,8 @@ import Data.Aeson.Types
 import Data.Monoid
 import Data.Ratio
 import GHC.Generics
+import Test.QuickCheck
+
 -------------------------------------------------------------------------------
 -- | The available instruments.
 data Sound =
@@ -66,10 +69,14 @@ data Sound =
    | ShortWhistle  | LongWhistle   | ShortGuiro   | LongGuiro
    | Claves        | HighWoodBlock | LowWoodBlock | MuteCuica
    | OpenCuica     | MuteTriangle  | OpenTriangle
-   deriving (Show, Eq, Ord, Enum, Generic)
+   deriving (Show, Eq, Ord, Enum, Generic, Bounded)
 
 instance FromJSON Sound
 instance ToJSON Sound
+
+instance Arbitrary Sound where
+  arbitrary = toEnum <$> choose ( fromEnum (minBound :: Sound)
+                                , fromEnum (maxBound :: Sound) )
 
 -- | A single drum strike, 'tone' is the instrument, dur the duration, and
 --  vol the volume.
@@ -77,7 +84,7 @@ data Hit = Hit
     { _tone      :: Sound
     , _duration  :: Rational
     , _velocity  :: Rational
-    } deriving (Show, Generic)
+    } deriving (Show, Eq, Generic)
 
 makeLenses ''Hit
 
@@ -87,7 +94,14 @@ instance FromJSON Hit where
 instance ToJSON Hit where
   toJSON = genericToJSON defaultOptions {fieldLabelModifier = drop 1}
 
--- | Constructor fo 'Hit'.
+instance Arbitrary Hit where
+  arbitrary = do
+    tone <- arbitrary
+    dur  <- toRational <$> choose (1 :: Int, 64)
+    vol  <- toRational <$> choose (0 :: Int, 127)
+    return $ Hit tone dur vol
+
+-- | Constructor for 'Hit'.
 hit :: Sound -> Rational -> Rational -> Hit
 hit = Hit
 
@@ -101,17 +115,35 @@ data Command =
   | Tempo Rational  Command
   | Level Rational  Command
   | None
-  deriving (Show, Generic)
+  deriving (Show, Generic, Eq)
 
 instance FromJSON Command
 instance ToJSON Command
 
-newtype Beat a = Beat {unBeat :: (Command, a)} deriving (Show, Generic)
+arbnC :: Int -> Gen Command
+arbnC n = frequency
+  [ (1, return None)
+  , (3, liftM  Prim arbitrary)
+  , (n, liftM2 Chain (arbnC (n `div` 2)) (arbnC (n `div` 2)))
+  , (n, liftM2 Par (arbnC (n `div` 8)) (arbnC (n `div` 8)))
+  , (1, liftM2 Tempo arbitrary arbitrary)
+  , (1, liftM2 Level arbitrary arbitrary)
+  ]
+
+instance Arbitrary Command where
+  arbitrary = sized arbnC
+
+newtype Beat a = Beat {unBeat :: (Command, a)} deriving (Show, Generic, Eq)
 
 type Song = Beat ()
 
 instance FromJSON Song
 instance ToJSON Song
+
+instance Arbitrary Song where
+  arbitrary = do
+    b <- arbitrary :: Gen Command
+    return $ Beat (b, ())
 
 data Control = Control
   { _bpm    :: Rational
