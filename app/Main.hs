@@ -191,6 +191,13 @@ hiphop = scaleBPM 1.5 . clone 2
       <> dseq ClosedHihat 12 "9.9... 9..5.. 9..5.9 ...5.. 9..5.. 9..5.. 9.5... 9..5.."
       <> dseq Tambourine  12 "7.59.5 7.59.5 7.59.5 7.59.5 7.59.5 7.59.5 7.59.5 7.59.5"
 
+impeach :: Song
+impeach = scaleBPM 1.5 . clone 4
+        $ dseq BassDrum1   8 "7... ...7 7... ..7."
+       <> dseq SnareDrum1  8 ".... 7... .... 7..."
+       <> dseq ClosedHihat 8 "7.7. 7.77 7... 7.7."
+       <> dseq OpenHihat   8 ".... .... ..7. ...."
+
 
 main :: IO ()
 main = do
@@ -216,5 +223,7 @@ main = do
   play $ funkyDrummer >> sep
   putStrLn "11. hiphop"
   play $ hiphop
+  putStrLn "12. impeach"
+  play $ impeach
   where
     sep = clone 4 stick
